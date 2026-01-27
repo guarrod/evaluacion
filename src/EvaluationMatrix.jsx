@@ -1,3 +1,4 @@
+/* global __APP_VERSION__ */
 import React, { useMemo, useState } from "react";
 
 /**
@@ -10,6 +11,9 @@ import React, { useMemo, useState } from "react";
  * - Layer summaries + overall score
  * - Export/Import JSON
  */
+
+const APP_VERSION =
+  typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "dev-local";
 
 const SCALE = [1, 2, 3, 4, 5];
 
@@ -80,6 +84,18 @@ const DEFAULT_CRITERIA = [
   },
 ];
 
+const CHANGELOG = [
+  {
+    version: APP_VERSION,
+    date: "2026-01-27",
+    items: [
+      "Primer corte de la matriz UX: criterios, pesos opcionales y export/import JSON.",
+      "Resumen por capas + indicador de completitud.",
+      "Base visual con Tailwind y tipografía Space Grotesk.",
+    ],
+  },
+];
+
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
@@ -127,6 +143,7 @@ export default function EvaluationMatrix() {
 
   const [useWeights, setUseWeights] = useState(true);
   const [showJSON, setShowJSON] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
   const [importText, setImportText] = useState("");
 
   const layers = useMemo(() => {
@@ -188,7 +205,7 @@ export default function EvaluationMatrix() {
         perLayer: computed.perLayer,
         createdAtISO: new Date().toISOString(),
       },
-      version: "1.0.0",
+      version: APP_VERSION,
     }),
     [meta, useWeights, criteria, computed]
   );
@@ -550,10 +567,72 @@ export default function EvaluationMatrix() {
           </section>
         )}
 
-        <footer className="mt-10 pb-6 text-center text-xs text-zinc-500">
-          Hecho para que el feedback sea observable y accionable (no “sensaciones”).
+        <footer className="mt-10 pb-6 text-xs text-zinc-500">
+          <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-semibold text-zinc-700 shadow-sm">
+                Versión {APP_VERSION}
+              </span>
+              <button
+                onClick={() => setShowChangelog(true)}
+                className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-50"
+              >
+                Ver log de cambios
+              </button>
+            </div>
+            <span className="text-center sm:text-right">
+              Hecho para que el feedback sea observable y accionable (no “sensaciones”).
+            </span>
+          </div>
         </footer>
       </div>
+
+      {showChangelog && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 px-4 py-6">
+          <div className="w-full max-w-3xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-zinc-900">Log de cambios</div>
+                <p className="text-xs text-zinc-600">
+                  Versión calculada por pushes (conteo de commits) + short SHA.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowChangelog(false)}
+                className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {CHANGELOG.map((entry) => (
+                <div
+                  key={entry.version}
+                  className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-4"
+                >
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <div className="text-sm font-semibold text-zinc-900">
+                        {entry.version}
+                      </div>
+                      <div className="text-xs text-zinc-500">{entry.date}</div>
+                    </div>
+                    <span className="rounded-full bg-zinc-900 px-3 py-1 text-[11px] font-semibold text-white">
+                      Push log
+                    </span>
+                  </div>
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-700">
+                    {entry.items.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
