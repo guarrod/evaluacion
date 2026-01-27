@@ -24,7 +24,19 @@ const DEFAULT_CRITERIA = [
     name: "Calidad de entregables",
     description:
       "Claridad de la solución, nivel de detalle adecuado, consistencia con lineamientos, criterio explícito.",
-    weight: 1,
+    examples: [
+      "Flujos, pantallas y estados edge bien cubiertos sin retrabajo posterior.",
+      "Documenta decisiones y especifica con claridad (copys, reglas, edge cases).",
+    ],
+    anchors: [
+      "1: Entregas incompletas o erróneas; generan retrabajo.",
+      "2: Cubre lo básico pero con huecos frecuentes; poca claridad.",
+      "3: Esperado: completo y entendible; sigue lineamientos.",
+      "4: Anticipa edge cases y documenta decisiones; consistencia sólida.",
+      "5: Referencia para el equipo; eleva estándares y acelera a otros.",
+    ],
+    recommendedWeights: { junior: 1.2, mid: 1.4, senior: 1.5 },
+    weight: 1.4,
   },
   {
     id: "delivery_ownership",
@@ -32,7 +44,19 @@ const DEFAULT_CRITERIA = [
     name: "Cumplimiento y ownership de entregas",
     description:
       "Cumple tiempos sin persecución, anticipa bloqueos, da seguimiento y cierra loops.",
-    weight: 1,
+    examples: [
+      "Se adelanta a riesgos y renegocia a tiempo con stakeholders.",
+      "Cierra loops: comunica avances y cambios sin persecución.",
+    ],
+    anchors: [
+      "1: Requiere seguimiento constante; no cierra compromisos.",
+      "2: Cumple solo con empuje; poca anticipación.",
+      "3: Entrega en tiempo y comunica cambios básicos.",
+      "4: Anticipa riesgos y renegocia; reduce sorpresas al equipo.",
+      "5: Modelo de ownership; otros se coordinan siguiendo su cadencia.",
+    ],
+    recommendedWeights: { junior: 1.0, mid: 1.2, senior: 1.4 },
+    weight: 1.2,
   },
   {
     id: "communication_participation",
@@ -40,7 +64,19 @@ const DEFAULT_CRITERIA = [
     name: "Comunicación y participación",
     description:
       "Participa en reuniones, explica decisiones, escucha y construye sobre otros.",
-    weight: 1,
+    examples: [
+      "Llega preparado a rituales, explica decisiones con contexto.",
+      "Escucha y sintetiza; hace preguntas que desbloquean.",
+    ],
+    anchors: [
+      "1: No participa o descoordina; confunde al equipo.",
+      "2: Comunicación reactiva; falta claridad y estructura.",
+      "3: Comunicaciones claras; participa y escucha.",
+      "4: Facilita discusiones, sintetiza y hace visibles riesgos.",
+      "5: Facilita sesiones complejas y eleva la comunicación del grupo.",
+    ],
+    recommendedWeights: { junior: 1.0, mid: 1.2, senior: 1.3 },
+    weight: 1.1,
   },
   {
     id: "collaboration_team_attitude",
@@ -48,7 +84,19 @@ const DEFAULT_CRITERIA = [
     name: "Colaboración y actitud de equipo",
     description:
       "Disposición real a ayudar, actitud ante pedidos extra, lenguaje verbal/no verbal.",
-    weight: 1,
+    examples: [
+      "Se ofrece para apoyar picos de carga y pair design.",
+      "Mantiene actitud constructiva en desacuerdos.",
+    ],
+    anchors: [
+      "1: Actitud negativa o bloqueante; drena al equipo.",
+      "2: Ayuda solo si se le insiste; lenguaje poco colaborativo.",
+      "3: Colabora cuando se le pide; trato respetuoso.",
+      "4: Se adelanta a ayudar; cuida tono y clima.",
+      "5: Cataliza colaboración; crea espacios seguros y productivos.",
+    ],
+    recommendedWeights: { junior: 1.0, mid: 1.1, senior: 1.2 },
+    weight: 1.0,
   },
   {
     id: "proactivity_initiative",
@@ -56,7 +104,19 @@ const DEFAULT_CRITERIA = [
     name: "Proactividad e iniciativa",
     description:
       "Propone mejoras, detecta problemas antes, sugiere caminos alternativos.",
-    weight: 1,
+    examples: [
+      "Identifica problemas sin que se le pida y plantea opciones.",
+      "Trae data, comparativos o prototipos rápidos para validar.",
+    ],
+    anchors: [
+      "1: No propone; espera instrucciones incluso ante problemas obvios.",
+      "2: Propone esporádico y sin profundidad; poca acción.",
+      "3: Sugiere mejoras con sustento básico y las ejecuta.",
+      "4: Anticipa problemas, prioriza y mueve recursos para resolver.",
+      "5: Cambia la vara del equipo; crea playbooks y frameworks reutilizables.",
+    ],
+    recommendedWeights: { junior: 1.0, mid: 1.3, senior: 1.6 },
+    weight: 1.3,
   },
   {
     id: "product_domain_context",
@@ -64,7 +124,19 @@ const DEFAULT_CRITERIA = [
     name: "Dominio del producto y contexto",
     description:
       "Entiende el producto, restricciones negocio/tecnología, usa data/feedback real.",
-    weight: 1,
+    examples: [
+      "Decisiones basadas en métricas, feedback real o constraints técnicos.",
+      "Conoce el flujo end-to-end y sus trade-offs.",
+    ],
+    anchors: [
+      "1: Diseños desconectados de negocio/tech; ignora datos.",
+      "2: Considera contexto solo tras feedback; errores por desconocimiento.",
+      "3: Usa inputs clave y evita choques con restricciones.",
+      "4: Integra data y tech temprano; optimiza trade-offs.",
+      "5: Se vuelve referencia de dominio; guía decisiones estratégicas.",
+    ],
+    recommendedWeights: { junior: 1.1, mid: 1.3, senior: 1.4 },
+    weight: 1.2,
   },
   {
     id: "feedback_adaptability",
@@ -72,7 +144,19 @@ const DEFAULT_CRITERIA = [
     name: "Actitud frente al feedback y al cambio",
     description:
       "Recibe feedback sin defensiva, itera con buena disposición, aprende de correcciones.",
-    weight: 1,
+    examples: [
+      "Pide feedback temprano y lo incorpora rápido.",
+      "Explica qué cambió y qué aprendió tras iteraciones.",
+    ],
+    anchors: [
+      "1: Rechaza feedback; no corrige o corrige tarde.",
+      "2: Acepta a regañadientes; itera mínimo y lento.",
+      "3: Recibe feedback y ajusta con buena disposición.",
+      "4: Pide feedback proactivamente, itera rápido y comunica cambios.",
+      "5: Eleva la cultura de feedback; crea mecánicas y da coaching.",
+    ],
+    recommendedWeights: { junior: 1.0, mid: 1.2, senior: 1.3 },
+    weight: 1.1,
   },
   {
     id: "cultural_impact_projection",
@@ -80,7 +164,19 @@ const DEFAULT_CRITERIA = [
     name: "Impacto cultural (proyección)",
     description:
       "Energía que aporta, si suma o drena, si refuerza o debilita cultura.",
-    weight: 1,
+    examples: [
+      "Participa en rituales de equipo y cuida el clima.",
+      "Modela comportamientos: comparte aprendizajes, celebra logros.",
+    ],
+    anchors: [
+      "1: Impacto negativo visible; drena moral o rompe acuerdos.",
+      "2: Neutral con sesgos negativos; no cuida clima.",
+      "3: Suma al clima; respeta acuerdos y normas.",
+      "4: Refuerza cultura activamente; contagia buenas prácticas.",
+      "5: Referente cultural; crea mecanismos que perduran.",
+    ],
+    recommendedWeights: { junior: 0.8, mid: 1.2, senior: 1.5 },
+    weight: 1.2,
   },
 ];
 
@@ -89,9 +185,10 @@ const CHANGELOG = [
     version: APP_VERSION,
     date: "2026-01-27",
     items: [
-      "Primer corte de la matriz UX: criterios, pesos opcionales y export/import JSON.",
-      "Resumen por capas + indicador de completitud.",
-      "Base visual con Tailwind y tipografía Space Grotesk.",
+      "Anclajes 1–5 por criterio + ejemplos observables para reducir subjetividad.",
+      "Pesos sugeridos por seniority, opción para bloquear extremos (0/5) y preset rápido.",
+      "Sección de fortalezas y focos de 90 días para acción concreta.",
+      "Export/import conserva notas, pesos y plan de acción.",
     ],
   },
 ];
@@ -143,13 +240,22 @@ export default function EvaluationMatrix() {
 
   const [useWeights, setUseWeights] = useState(true);
   const [showJSON, setShowJSON] = useState(false);
+  const [allowExtremeWeights, setAllowExtremeWeights] = useState(false);
+  const [weightPreset, setWeightPreset] = useState("custom");
   const [showChangelog, setShowChangelog] = useState(false);
   const [importText, setImportText] = useState("");
+  const [strengths, setStrengths] = useState("");
+  const [focusAreas, setFocusAreas] = useState("");
 
   const layers = useMemo(() => {
     const unique = Array.from(new Set(criteria.map((c) => c.layer)));
     return unique;
   }, [criteria]);
+
+  const weightLimits = useMemo(
+    () => (allowExtremeWeights ? { min: 0, max: 5 } : { min: 0.5, max: 4.5 }),
+    [allowExtremeWeights]
+  );
 
   const computed = useMemo(() => {
     const filled = criteria.filter((c) => c.score > 0);
@@ -191,6 +297,10 @@ export default function EvaluationMatrix() {
     () => ({
       meta,
       useWeights,
+      allowExtremeWeights,
+      weightPreset,
+      strengths,
+      focusAreas,
       criteria: criteria.map(({ id, layer, name, description, weight, score, evidence }) => ({
         id,
         layer,
@@ -228,14 +338,28 @@ export default function EvaluationMatrix() {
   }
 
   function setWeight(id, weight) {
-    const w = clamp(Number(weight || 0), 0, 5);
+    const w = clamp(Number(weight || 0), weightLimits.min, weightLimits.max);
     setCriteria((prev) =>
       prev.map((c) => (c.id === id ? { ...c, weight: w } : c))
     );
   }
 
+  function applyPreset(preset) {
+    setWeightPreset(preset);
+    setCriteria((prev) =>
+      prev.map((c) => {
+        const rec = c.recommendedWeights?.[preset];
+        if (typeof rec !== "number") return c;
+        return { ...c, weight: clamp(rec, weightLimits.min, weightLimits.max) };
+      })
+    );
+  }
+
   function resetAll() {
     setCriteria((prev) => prev.map((c) => ({ ...c, score: 0, evidence: "" })));
+    setStrengths("");
+    setFocusAreas("");
+    setWeightPreset("custom");
   }
 
   async function copyJSON() {
@@ -254,6 +378,10 @@ export default function EvaluationMatrix() {
 
       setMeta((m) => ({ ...m, ...parsed.meta }));
       setUseWeights(!!parsed.useWeights);
+      setAllowExtremeWeights(!!parsed.allowExtremeWeights);
+      setWeightPreset(parsed.weightPreset || "custom");
+      setStrengths(typeof parsed.strengths === "string" ? parsed.strengths : "");
+      setFocusAreas(typeof parsed.focusAreas === "string" ? parsed.focusAreas : "");
 
       // Merge by id to preserve defaults if missing.
       const incoming = Array.isArray(parsed.criteria) ? parsed.criteria : [];
@@ -263,7 +391,10 @@ export default function EvaluationMatrix() {
           if (!hit) return c;
           return {
             ...c,
-            weight: typeof hit.weight === "number" ? hit.weight : c.weight,
+            weight:
+              typeof hit.weight === "number"
+                ? clamp(hit.weight, weightLimits.min, weightLimits.max)
+                : c.weight,
             score: typeof hit.score === "number" ? hit.score : 0,
             evidence: typeof hit.evidence === "string" ? hit.evidence : "",
           };
@@ -286,7 +417,7 @@ export default function EvaluationMatrix() {
                 Matriz de evaluación — UX Designer
               </h1>
               <p className="text-sm text-zinc-600">
-                Radiografía de desempeño (Entrega · Forma de trabajar · Ownership & cultura)
+                Reporte de desempeño (Entrega · Forma de trabajar · Ownership & cultura)
               </p>
             </div>
 
@@ -320,10 +451,10 @@ export default function EvaluationMatrix() {
               placeholder="Nombre del diseñador"
             />
             <Field
-              label="Proyecto / Squad"
+              label="Tribu / Squad"
               value={meta.project}
               onChange={(v) => setMeta((m) => ({ ...m, project: v }))}
-              placeholder="Ej: Pagos / Cobros"
+              placeholder="Ej: Business Banking / Cobros"
             />
             <Field
               label="Periodo"
@@ -337,20 +468,75 @@ export default function EvaluationMatrix() {
               onChange={(v) => setMeta((m) => ({ ...m, evaluator: v }))}
               placeholder="Tu nombre"
             />
-            <div className="flex items-end justify-between gap-3">
-              <div className="w-full">
-                <div className="text-xs font-medium text-zinc-600">Pesos</div>
-                <div className="mt-1 flex items-center gap-2">
+          </div>
+
+          <div className="mt-3 space-y-3 rounded-2xl border border-zinc-200 bg-white p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="inline-flex items-center gap-2 text-sm text-zinc-700">
                   <input
                     type="checkbox"
                     checked={useWeights}
                     onChange={(e) => setUseWeights(e.target.checked)}
                     className="h-4 w-4"
                   />
-                  <span className="text-sm text-zinc-700">
-                    Usar pesos por criterio
-                  </span>
-                </div>
+                  Usar pesos por criterio
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={allowExtremeWeights}
+                    onChange={(e) => {
+                      const allow = e.target.checked;
+                      setAllowExtremeWeights(allow);
+                      if (!allow) {
+                        setCriteria((prev) =>
+                          prev.map((c) => ({
+                            ...c,
+                            weight: clamp(c.weight, 0.5, 4.5),
+                          }))
+                        );
+                      }
+                    }}
+                    className="h-4 w-4"
+                  />
+                  Permitir pesos extremos (0 o 5) solo por acuerdo
+                </label>
+              </div>
+              <div className="text-xs text-zinc-500">
+                Límites actuales: {weightLimits.min} – {weightLimits.max}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-zinc-600">Preset por seniority</span>
+                <select
+                  value={weightPreset}
+                  onChange={(e) => {
+                    const preset = e.target.value;
+                    if (preset === "custom") {
+                      setWeightPreset(preset);
+                      return;
+                    }
+                    applyPreset(preset);
+                  }}
+                  className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
+                >
+                  <option value="custom">Custom</option>
+                  <option value="junior">Junior</option>
+                  <option value="mid">Mid</option>
+                  <option value="senior">Senior</option>
+                </select>
+                <button
+                  onClick={() => applyPreset(weightPreset === "custom" ? "mid" : weightPreset)}
+                  className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
+                >
+                  Aplicar preset
+                </button>
+              </div>
+              <div className="text-xs text-zinc-600">
+                Pesos de seniority: proactividad/impacto cultural pesan más en senior.
               </div>
             </div>
           </div>
@@ -459,6 +645,20 @@ export default function EvaluationMatrix() {
                     )}
                   </div>
                   <p className="mt-1 text-sm text-zinc-600">{c.description}</p>
+                  <div className="mt-2 grid gap-2 lg:grid-cols-[minmax(0,1fr)]">
+                    {c.examples?.length ? (
+                      <div className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2">
+                        <div className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                          Ejemplos observables
+                        </div>
+                        <ul className="mt-1 list-disc space-y-1 pl-4 text-xs text-zinc-600">
+                          {c.examples.map((ex) => (
+                            <li key={ex}>{ex}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2 lg:items-end">
@@ -491,8 +691,8 @@ export default function EvaluationMatrix() {
                     <span className="text-xs text-zinc-600">Peso</span>
                     <input
                       type="number"
-                      min={0}
-                      max={5}
+                      min={weightLimits.min}
+                      max={weightLimits.max}
                       step={0.5}
                       value={c.weight}
                       disabled={!useWeights}
@@ -500,8 +700,30 @@ export default function EvaluationMatrix() {
                       className="w-20 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm disabled:opacity-50"
                     />
                   </div>
+                  <div className="text-[11px] text-zinc-500">
+                    Sug. J {c.recommendedWeights?.junior ?? "-"} · M {c.recommendedWeights?.mid ?? "-"} · S {c.recommendedWeights?.senior ?? "-"}
+                  </div>
                 </div>
               </div>
+
+              {c.anchors?.length ? (
+                <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-5">
+                  {c.anchors.map((anchor, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2"
+                    >
+                      <div className="flex items-center gap-2 text-xs font-semibold text-zinc-700">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-900 text-[11px] text-white">
+                          {idx + 1}
+                        </span>
+                        <span>{scoreLabel(idx + 1)}</span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-zinc-600">{anchor}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
 
               <div className="mt-3">
                 <div className="text-xs font-medium text-zinc-600">
@@ -517,6 +739,54 @@ export default function EvaluationMatrix() {
               </div>
             </div>
           ))}
+        </section>
+
+        <section className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Fortalezas
+                </div>
+                <p className="text-sm text-zinc-600">
+                  Conductas o skills que queremos reforzar.
+                </p>
+              </div>
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+                Qué mantener
+              </span>
+            </div>
+            <textarea
+              value={strengths}
+              onChange={(e) => setStrengths(e.target.value)}
+              rows={5}
+              placeholder="Ej: Facilita workshops complejos; entrega specs impecables sin retrabajo; contagia buenas prácticas."
+              className="mt-3 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400"
+            />
+          </div>
+
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                  Áreas clave (próx. 90 días)
+                </div>
+                <p className="text-sm text-zinc-600">
+                  1–3 focos concretos con pasos observables.
+                </p>
+              </div>
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold text-amber-800">
+                Plan de acción
+              </span>
+            </div>
+            <textarea
+              value={focusAreas}
+              onChange={(e) => setFocusAreas(e.target.value)}
+              rows={5}
+              placeholder="Ej: Aumentar participación en rituales (llevar agenda, facilitación 1 vez/semana); validar con data antes de iterar; mejorar ownership de entregas."
+              className="mt-3 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400"
+            />
+          </div>
         </section>
 
         {/* JSON Panel */}
