@@ -12,8 +12,14 @@ import React, { useMemo, useState } from "react";
  * - Export/Import JSON
  */
 
-const APP_VERSION =
-  typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "dev-local";
+const VERSION_INFO =
+  typeof __APP_VERSION__ === "object" && __APP_VERSION__ !== null
+    ? __APP_VERSION__
+    : { semver: "0.0.0", build: "dev", label: "v0.0.0", full: "v0.0.0+dev" };
+
+const VERSION_SEMVER = VERSION_INFO.semver || "0.0.0";
+const VERSION_LABEL = VERSION_INFO.label || `v${VERSION_SEMVER}`;
+const VERSION_FULL = VERSION_INFO.full || `${VERSION_LABEL}+${VERSION_INFO.build || "dev"}`;
 
 const SCALE = [1, 2, 3, 4, 5];
 
@@ -182,13 +188,23 @@ const DEFAULT_CRITERIA = [
 
 const CHANGELOG = [
   {
-    version: APP_VERSION,
+    version: "0.2.0",
     date: "2026-01-27",
+    build: VERSION_INFO.build,
     items: [
       "Anclajes 1–5 por criterio + ejemplos observables para reducir subjetividad.",
       "Pesos sugeridos por seniority, opción para bloquear extremos (0/5) y preset rápido.",
       "Sección de fortalezas y focos de 90 días para acción concreta.",
       "Export/import conserva notas, pesos y plan de acción.",
+    ],
+  },
+  {
+    version: "0.1.0",
+    date: "2026-01-27",
+    items: [
+      "Primer corte de la matriz UX con criterios base y pesos opcionales.",
+      "Resumen general + por capas, export/import JSON y reset rápido.",
+      "UI con Tailwind y tipografía Space Grotesk.",
     ],
   },
 ];
@@ -315,9 +331,18 @@ export default function EvaluationMatrix() {
         perLayer: computed.perLayer,
         createdAtISO: new Date().toISOString(),
       },
-      version: APP_VERSION,
+      version: VERSION_FULL,
     }),
-    [meta, useWeights, criteria, computed]
+    [
+      meta,
+      useWeights,
+      criteria,
+      computed,
+      allowExtremeWeights,
+      weightPreset,
+      strengths,
+      focusAreas,
+    ]
   );
 
   const exportJSON = useMemo(
@@ -376,6 +401,10 @@ export default function EvaluationMatrix() {
       const parsed = JSON.parse(importText);
       if (!parsed?.criteria || !parsed?.meta) throw new Error("Formato inválido");
 
+      const importLimits = parsed.allowExtremeWeights
+        ? { min: 0, max: 5 }
+        : { min: 0.5, max: 4.5 };
+
       setMeta((m) => ({ ...m, ...parsed.meta }));
       setUseWeights(!!parsed.useWeights);
       setAllowExtremeWeights(!!parsed.allowExtremeWeights);
@@ -393,7 +422,7 @@ export default function EvaluationMatrix() {
             ...c,
             weight:
               typeof hit.weight === "number"
-                ? clamp(hit.weight, weightLimits.min, weightLimits.max)
+                ? clamp(hit.weight, importLimits.min, importLimits.max)
                 : c.weight,
             score: typeof hit.score === "number" ? hit.score : 0,
             evidence: typeof hit.evidence === "string" ? hit.evidence : "",
@@ -841,7 +870,10 @@ export default function EvaluationMatrix() {
           <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
             <div className="flex items-center gap-2">
               <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-semibold text-zinc-700 shadow-sm">
-                Versión {APP_VERSION}
+                Versión {VERSION_LABEL}
+              </span>
+              <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-medium text-zinc-600">
+                Build {VERSION_INFO.build || "dev"}
               </span>
               <button
                 onClick={() => setShowChangelog(true)}
@@ -864,7 +896,7 @@ export default function EvaluationMatrix() {
               <div>
                 <div className="text-sm font-semibold text-zinc-900">Log de cambios</div>
                 <p className="text-xs text-zinc-600">
-                  Versión calculada por pushes (conteo de commits) + short SHA.
+                  Formato SemVer + build (SHA corto).
                 </p>
               </div>
               <button
@@ -884,13 +916,25 @@ export default function EvaluationMatrix() {
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <div className="text-sm font-semibold text-zinc-900">
-                        {entry.version}
+                        v{entry.version}
                       </div>
                       <div className="text-xs text-zinc-500">{entry.date}</div>
+                      {entry.build && (
+                        <div className="text-[11px] text-zinc-400">
+                          build {entry.build}
+                        </div>
+                      )}
                     </div>
-                    <span className="rounded-full bg-zinc-900 px-3 py-1 text-[11px] font-semibold text-white">
-                      Push log
-                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="rounded-full bg-zinc-900 px-3 py-1 text-[11px] font-semibold text-white">
+                        SemVer
+                      </span>
+                      {entry.version === VERSION_SEMVER && (
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-emerald-800">
+                          Actual
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-700">
                     {entry.items.map((item, idx) => (
