@@ -17,6 +17,7 @@ const APP_VERSION = resolveVersion()
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/evaluacion/',
   define: {
     __APP_VERSION__: JSON.stringify(APP_VERSION),
   },
