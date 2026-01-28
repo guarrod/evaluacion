@@ -27,6 +27,14 @@ const APP_VERSION = resolveVersion()
 export default defineConfig({
   plugins: [react()],
   base: '/evaluacion/',
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8788',
+        changeOrigin: true,
+      },
+    },
+  },
   define: {
     __APP_VERSION__: JSON.stringify(APP_VERSION),
   },
