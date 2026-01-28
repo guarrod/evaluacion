@@ -20,6 +20,7 @@ const VERSION_INFO =
 const VERSION_SEMVER = VERSION_INFO.semver || "0.0.0";
 const VERSION_LABEL = VERSION_INFO.label || `v${VERSION_SEMVER}`;
 const VERSION_FULL = VERSION_INFO.full || `${VERSION_LABEL}+${VERSION_INFO.build || "dev"}`;
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 const SCALE = [1, 2, 3, 4, 5];
 
@@ -188,9 +189,17 @@ const DEFAULT_CRITERIA = [
 
 const CHANGELOG = [
   {
-    version: "0.2.0",
+    version: "0.3.0",
     date: "2026-01-27",
     build: VERSION_INFO.build,
+    items: [
+      "Botón de análisis IA vía proxy /api/analyze (OpenAI) para resumir hallazgos y focos.",
+      "Rango de pesos ajustado (0.5–2, extremos 0–3) alineado con sugerencias.",
+    ],
+  },
+  {
+    version: "0.2.0",
+    date: "2026-01-27",
     items: [
       "Anclajes 1–5 por criterio + ejemplos observables para reducir subjetividad.",
       "Pesos sugeridos por seniority, opción para bloquear extremos (0/5) y preset rápido.",
@@ -262,6 +271,10 @@ export default function EvaluationMatrix() {
   const [importText, setImportText] = useState("");
   const [strengths, setStrengths] = useState("");
   const [focusAreas, setFocusAreas] = useState("");
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [analysisError, setAnalysisError] = useState("");
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisModel, setAnalysisModel] = useState("");
 
   const layers = useMemo(() => {
     const unique = Array.from(new Set(criteria.map((c) => c.layer)));
@@ -410,11 +423,11 @@ export default function EvaluationMatrix() {
       setAllowExtremeWeights(!!parsed.allowExtremeWeights);
       setWeightPreset(parsed.weightPreset || "custom");
       setStrengths(typeof parsed.strengths === "string" ? parsed.strengths : "");
-      setFocusAreas(typeof parsed.focusAreas === "string" ? parsed.focusAreas : "");
+    setFocusAreas(typeof parsed.focusAreas === "string" ? parsed.focusAreas : "");
 
-      // Merge by id to preserve defaults if missing.
-      const incoming = Array.isArray(parsed.criteria) ? parsed.criteria : [];
-      setCriteria((prev) =>
+    // Merge by id to preserve defaults if missing.
+    const incoming = Array.isArray(parsed.criteria) ? parsed.criteria : [];
+    setCriteria((prev) =>
         prev.map((c) => {
           const hit = incoming.find((x) => x.id === c.id);
           if (!hit) return c;
@@ -433,6 +446,29 @@ export default function EvaluationMatrix() {
       alert("Importado ✅");
     } catch (e) {
       alert("No pude importar. Revisa que sea un JSON válido del export.");
+    }
+  }
+
+  async function analyzeWithAI() {
+    setAnalysisLoading(true);
+    setAnalysisError("");
+    setAnalysisResult(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ evaluation: exportObject }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "No se pudo analizar");
+      }
+      setAnalysisModel(data?.model || "");
+      setAnalysisResult(data?.analysis || null);
+    } catch (err) {
+      setAnalysisError(err.message || "No se pudo analizar");
+    } finally {
+      setAnalysisLoading(false);
     }
   }
 
@@ -572,7 +608,7 @@ export default function EvaluationMatrix() {
         </header>
 
         {/* Summary */}
-        <section className="mb-6 grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <section className="mb-6 grid grid-cols-1 gap-3 lg:grid-cols-4">
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -646,6 +682,98 @@ export default function EvaluationMatrix() {
                 Tip: usa evidencia observable (situación → conducta → impacto).
               </p>
             </div>
+          </div>
+
+          <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-xs font-medium text-zinc-600">
+                  Análisis IA (beta)
+                </div>
+                <p className="text-sm text-zinc-700">
+                  Usa tu proxy /api/analyze con OPENAI_API_KEY.
+                </p>
+              </div>
+              <button
+                onClick={analyzeWithAI}
+                disabled={analysisLoading}
+                className="rounded-xl bg-zinc-900 px-3 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
+              >
+                {analysisLoading ? "Analizando…" : "Analizar"}
+              </button>
+            </div>
+
+            {analysisError && (
+              <div className="mt-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                {analysisError}
+              </div>
+            )}
+
+            {analysisResult ? (
+              <div className="mt-3 space-y-2 text-xs text-zinc-700">
+                {analysisResult.summary && (
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {analysisResult.summary}
+                  </p>
+                )}
+                {analysisResult.strengths?.length ? (
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase text-emerald-700">
+                      Fortalezas
+                    </div>
+                    <ul className="mt-1 list-disc space-y-1 pl-4">
+                      {analysisResult.strengths.map((s, idx) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {analysisResult.risks?.length ? (
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase text-amber-700">
+                      Riesgos
+                    </div>
+                    <ul className="mt-1 list-disc space-y-1 pl-4">
+                      {analysisResult.risks.map((s, idx) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {analysisResult.focus?.length ? (
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase text-zinc-700">
+                      Focos 90 días
+                    </div>
+                    <ul className="mt-1 list-disc space-y-1 pl-4">
+                      {analysisResult.focus.map((s, idx) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {analysisResult.actions?.length ? (
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase text-zinc-700">
+                      Recomendaciones
+                    </div>
+                    <ul className="mt-1 list-disc space-y-1 pl-4">
+                      {analysisResult.actions.map((s, idx) => (
+                        <li key={idx}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                <div className="text-[11px] text-zinc-500">
+                  Modelo: {analysisModel || "desconocido"}
+                </div>
+              </div>
+            ) : (
+              <p className="mt-3 text-xs text-zinc-600">
+                Requiere que el backend (server.js) corra con OPENAI_API_KEY. No envía PII a menos
+                que la escribas en la evaluación.
+              </p>
+            )}
           </div>
         </section>
 
