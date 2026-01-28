@@ -269,7 +269,7 @@ export default function EvaluationMatrix() {
   }, [criteria]);
 
   const weightLimits = useMemo(
-    () => (allowExtremeWeights ? { min: 0, max: 5 } : { min: 0.5, max: 4.5 }),
+    () => (allowExtremeWeights ? { min: 0, max: 3 } : { min: 0.5, max: 2 }),
     [allowExtremeWeights]
   );
 
@@ -402,8 +402,8 @@ export default function EvaluationMatrix() {
       if (!parsed?.criteria || !parsed?.meta) throw new Error("Formato inválido");
 
       const importLimits = parsed.allowExtremeWeights
-        ? { min: 0, max: 5 }
-        : { min: 0.5, max: 4.5 };
+        ? { min: 0, max: 3 }
+        : { min: 0.5, max: 2 };
 
       setMeta((m) => ({ ...m, ...parsed.meta }));
       setUseWeights(!!parsed.useWeights);
@@ -472,7 +472,7 @@ export default function EvaluationMatrix() {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-4 grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field
               label="Evaluado"
               value={meta.evaluateeName}
@@ -522,14 +522,14 @@ export default function EvaluationMatrix() {
                         setCriteria((prev) =>
                           prev.map((c) => ({
                             ...c,
-                            weight: clamp(c.weight, 0.5, 4.5),
+                            weight: clamp(c.weight, 0.5, 2),
                           }))
                         );
                       }
                     }}
                     className="h-4 w-4"
                   />
-                  Permitir pesos extremos (0 o 5) solo por acuerdo
+                  Permitir pesos extremos (0–3) solo por acuerdo
                 </label>
               </div>
               <div className="text-xs text-zinc-500">
