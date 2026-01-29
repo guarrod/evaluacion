@@ -21,7 +21,13 @@ const VERSION_SEMVER = VERSION_INFO.semver || "0.0.0";
 const VERSION_LABEL = VERSION_INFO.label || `v${VERSION_SEMVER}`;
 const VERSION_FULL = VERSION_INFO.full || `${VERSION_LABEL}+${VERSION_INFO.build || "dev"}`;
 const API_BASE = import.meta.env.VITE_API_BASE || "";
-const AI_ICON = new URL("/ai.svg", import.meta.env.BASE_URL).toString();
+const AI_ICON = (() => {
+  try {
+    return new URL("ai.svg", import.meta.env.BASE_URL || "/").toString();
+  } catch {
+    return "/ai.svg";
+  }
+})();
 
 const SCALE = [1, 2, 3, 4, 5];
 
