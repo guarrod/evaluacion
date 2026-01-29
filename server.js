@@ -20,6 +20,18 @@ const app = express()
 const port = process.env.PORT || 8788
 const apiKey = process.env.OPENAI_API_KEY
 const model = process.env.OPENAI_MODEL || 'gpt-4o-mini'
+const promptPath = process.env.OPENAI_PROMPT_PATH
+const DEFAULT_SYSTEM_PROMPT =
+  'Eres un coach de desempeño. Resume hallazgos, riesgos y plan 90 días. Devuelve JSON con summary, strengths, risks, focus, actions.'
+let systemPrompt = process.env.OPENAI_SYSTEM_PROMPT || DEFAULT_SYSTEM_PROMPT
+if (promptPath) {
+  const fullPath = path.isAbsolute(promptPath)
+    ? promptPath
+    : path.join(rootDir, promptPath)
+  if (fs.existsSync(fullPath)) {
+    systemPrompt = fs.readFileSync(fullPath, 'utf8')
+  }
+}
 const corsOrigin = process.env.CORS_ORIGIN
 
 let openai = null
@@ -51,8 +63,7 @@ app.post('/api/analyze', async (req, res) => {
     const messages = [
       {
         role: 'system',
-        content:
-          'Eres un coach de desempeño. Resume hallazgos, riesgos y plan 90 días. Devuelve JSON claro.',
+        content: systemPrompt,
       },
       {
         role: 'user',
