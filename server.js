@@ -1,7 +1,20 @@
-import 'dotenv/config'
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 import express from 'express'
 import cors from 'cors'
 import OpenAI from 'openai'
+import { config as loadEnv } from 'dotenv'
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url))
+const envLocal = path.join(rootDir, '.env.local')
+const envDefault = path.join(rootDir, '.env')
+
+if (fs.existsSync(envLocal)) {
+  loadEnv({ path: envLocal })
+} else if (fs.existsSync(envDefault)) {
+  loadEnv({ path: envDefault })
+}
 
 const app = express()
 const port = process.env.PORT || 8788
@@ -9,7 +22,12 @@ const apiKey = process.env.OPENAI_API_KEY
 const model = process.env.OPENAI_MODEL || 'gpt-4o-mini'
 const corsOrigin = process.env.CORS_ORIGIN
 
-const openai = new OpenAI({ apiKey })
+let openai = null
+if (apiKey) {
+  openai = new OpenAI({ apiKey })
+} else {
+  console.warn('[api] OPENAI_API_KEY not set. /api/analyze will return 500 until configured.')
+}
 
 app.use(cors(corsOrigin ? { origin: corsOrigin } : undefined))
 app.use(express.json({ limit: '1mb' }))
