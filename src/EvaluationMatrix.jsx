@@ -325,7 +325,7 @@ export default function EvaluationMatrix() {
     }
     if (obj && typeof obj === "object" && !Array.isArray(obj)) {
       return Object.entries(obj)
-        .map(([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`)
+        .map(([k, v]) => `${typeof v === "string" ? v : JSON.stringify(v)}`)
         .join(" • ");
     }
     return item;
@@ -743,12 +743,11 @@ export default function EvaluationMatrix() {
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-xs font-medium text-zinc-600">
-                  Análisis IA (beta)
+                <div className="flex items-center gap-2 text-xs font-medium text-zinc-600">
+                  <img src="/ai.svg" alt="IA" className="h-4 w-4" />
+                  <span>Análisis IA (beta)</span>
                 </div>
-                <p className="text-sm text-zinc-700">
-                  Usa tu proxy /api/analyze con OPENAI_API_KEY.
-                </p>
+                <p className="text-sm text-zinc-700">Usa tu proxy /api/analyze con OPENAI_API_KEY.</p>
               </div>
               <button
                 onClick={analyzeWithAI}
@@ -769,7 +768,7 @@ export default function EvaluationMatrix() {
               {analysisResult ? (
                 <div className="flex items-center justify-between">
                   <span>
-                    Último análisis disponible. Modelo: {analysisModel || "desconocido"}.
+                    
                   </span>
                   <button
                     onClick={() => setShowAnalysisModal(true)}
