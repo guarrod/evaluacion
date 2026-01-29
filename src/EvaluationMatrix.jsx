@@ -278,18 +278,22 @@ export default function EvaluationMatrix() {
 
   function normalizeAnalysis(payload) {
     const raw = payload || {};
+    const normalizeItem = (item) => {
+      if (item === null || item === undefined) return "";
+      if (typeof item === "string") return item;
+      if (typeof item === "number" || typeof item === "boolean") return String(item);
+      try {
+        return JSON.stringify(item);
+      } catch {
+        return String(item);
+      }
+    };
     const ensureArray = (val) => {
       if (!val) return [];
-      if (Array.isArray(val)) return val.filter(Boolean);
-      if (typeof val === "string") return [val];
-      return [JSON.stringify(val)];
+      if (Array.isArray(val)) return val.map(normalizeItem).filter(Boolean);
+      return [normalizeItem(val)].filter(Boolean);
     };
-    const summary =
-      typeof raw.summary === "string"
-        ? raw.summary
-        : raw.summary
-        ? JSON.stringify(raw.summary)
-        : "";
+    const summary = normalizeItem(raw.summary);
 
     return {
       summary,
