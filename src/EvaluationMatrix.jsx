@@ -276,6 +276,31 @@ export default function EvaluationMatrix() {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisModel, setAnalysisModel] = useState("");
 
+  function normalizeAnalysis(payload) {
+    const raw = payload || {};
+    const ensureArray = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val.filter(Boolean);
+      if (typeof val === "string") return [val];
+      return [JSON.stringify(val)];
+    };
+    const summary =
+      typeof raw.summary === "string"
+        ? raw.summary
+        : raw.summary
+        ? JSON.stringify(raw.summary)
+        : "";
+
+    return {
+      summary,
+      strengths: ensureArray(raw.strengths),
+      risks: ensureArray(raw.risks),
+      focus: ensureArray(raw.focus || raw.focusAreas),
+      actions: ensureArray(raw.actions || raw.recommendations),
+      raw,
+    };
+  }
+
   const layers = useMemo(() => {
     const unique = Array.from(new Set(criteria.map((c) => c.layer)));
     return unique;
@@ -464,7 +489,7 @@ export default function EvaluationMatrix() {
         throw new Error(data?.error || "No se pudo analizar");
       }
       setAnalysisModel(data?.model || "");
-      setAnalysisResult(data?.analysis || null);
+      setAnalysisResult(normalizeAnalysis(data?.analysis));
     } catch (err) {
       setAnalysisError(err.message || "No se pudo analizar");
     } finally {
@@ -764,6 +789,16 @@ export default function EvaluationMatrix() {
                     </ul>
                   </div>
                 ) : null}
+                {analysisResult.raw && (
+                  <details className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-[11px] text-zinc-600">
+                    <summary className="cursor-pointer font-semibold text-zinc-700">
+                      Ver JSON completo
+                    </summary>
+                    <pre className="mt-2 whitespace-pre-wrap break-words text-[11px]">
+                      {JSON.stringify(analysisResult.raw, null, 2)}
+                    </pre>
+                  </details>
+                )}
                 <div className="text-[11px] text-zinc-500">
                   Modelo: {analysisModel || "desconocido"}
                 </div>
