@@ -275,6 +275,7 @@ export default function EvaluationMatrix() {
   const [analysisError, setAnalysisError] = useState("");
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisModel, setAnalysisModel] = useState("");
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
   function normalizeAnalysis(payload) {
     const raw = payload || {};
@@ -482,6 +483,7 @@ export default function EvaluationMatrix() {
     setAnalysisLoading(true);
     setAnalysisError("");
     setAnalysisResult(null);
+    setShowAnalysisModal(true);
     try {
       const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
@@ -738,81 +740,26 @@ export default function EvaluationMatrix() {
               </div>
             )}
 
-            {analysisResult ? (
-              <div className="mt-3 space-y-2 text-xs text-zinc-700">
-                {analysisResult.summary && (
-                  <p className="text-sm font-semibold text-zinc-900">
-                    {analysisResult.summary}
-                  </p>
-                )}
-                {analysisResult.strengths?.length ? (
-                  <div>
-                    <div className="text-[11px] font-semibold uppercase text-emerald-700">
-                      Fortalezas
-                    </div>
-                    <ul className="mt-1 list-disc space-y-1 pl-4">
-                      {analysisResult.strengths.map((s, idx) => (
-                        <li key={idx}>{s}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {analysisResult.risks?.length ? (
-                  <div>
-                    <div className="text-[11px] font-semibold uppercase text-amber-700">
-                      Riesgos
-                    </div>
-                    <ul className="mt-1 list-disc space-y-1 pl-4">
-                      {analysisResult.risks.map((s, idx) => (
-                        <li key={idx}>{s}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {analysisResult.focus?.length ? (
-                  <div>
-                    <div className="text-[11px] font-semibold uppercase text-zinc-700">
-                      Focos 90 días
-                    </div>
-                    <ul className="mt-1 list-disc space-y-1 pl-4">
-                      {analysisResult.focus.map((s, idx) => (
-                        <li key={idx}>{s}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {analysisResult.actions?.length ? (
-                  <div>
-                    <div className="text-[11px] font-semibold uppercase text-zinc-700">
-                      Recomendaciones
-                    </div>
-                    <ul className="mt-1 list-disc space-y-1 pl-4">
-                      {analysisResult.actions.map((s, idx) => (
-                        <li key={idx}>{s}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {analysisResult.raw && (
-                  <details className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-[11px] text-zinc-600">
-                    <summary className="cursor-pointer font-semibold text-zinc-700">
-                      Ver JSON completo
-                    </summary>
-                    <pre className="mt-2 whitespace-pre-wrap break-words text-[11px]">
-                      {JSON.stringify(analysisResult.raw, null, 2)}
-                    </pre>
-                  </details>
-                )}
-                <div className="text-[11px] text-zinc-500">
-                  Modelo: {analysisModel || "desconocido"}
+            <div className="mt-3 text-xs text-zinc-600">
+              {analysisResult ? (
+                <div className="flex items-center justify-between">
+                  <span>
+                    Último análisis disponible. Modelo: {analysisModel || "desconocido"}.
+                  </span>
+                  <button
+                    onClick={() => setShowAnalysisModal(true)}
+                    className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-50"
+                  >
+                    Ver análisis
+                  </button>
                 </div>
-              </div>
-            ) : (
-              <p className="mt-3 text-xs text-zinc-600">
-                Requiere que el backend (server.js) corra con OPENAI_API_KEY. No envía PII a menos
-                que la escribas en la evaluación.
-              </p>
-            )}
+              ) : (
+                <span>
+                  Requiere que el backend (server.js) corra con OPENAI_API_KEY. No envía PII a menos
+                  que la escribas en la evaluación.
+                </span>
+              )}
+            </div>
           </div>
         </section>
 
@@ -1110,6 +1057,127 @@ export default function EvaluationMatrix() {
                   </ul>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAnalysisModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
+          <div className="w-full max-w-4xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-zinc-900">Análisis IA</div>
+                <p className="text-xs text-zinc-600">
+                  Resumen generado por el modelo (sin PII a menos que la escribas).
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAnalysisModal(false)}
+                className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div className="mt-3 text-xs text-zinc-700">
+              <div className="mb-3 flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+                <span className="font-semibold text-zinc-800">
+                  {analysisLoading ? "Generando análisis…" : "Análisis más reciente"}
+                </span>
+                <div className="text-[11px] text-zinc-500">
+                  Modelo: {analysisModel || "desconocido"}
+                </div>
+              </div>
+
+              {analysisError && (
+                <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                  {analysisError}
+                </div>
+              )}
+
+              {analysisLoading && !analysisResult && (
+                <p className="text-sm text-zinc-700">Procesando…</p>
+              )}
+
+              {analysisResult ? (
+                <div className="space-y-3">
+                  {analysisResult.summary && (
+                    <p className="text-sm font-semibold text-zinc-900">
+                      {analysisResult.summary}
+                    </p>
+                  )}
+
+                  {analysisResult.strengths?.length ? (
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase text-emerald-700">
+                        Fortalezas
+                      </div>
+                      <ul className="mt-1 list-disc space-y-1 pl-4">
+                        {analysisResult.strengths.map((s, idx) => (
+                          <li key={idx}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {analysisResult.risks?.length ? (
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase text-amber-700">
+                        Riesgos
+                      </div>
+                      <ul className="mt-1 list-disc space-y-1 pl-4">
+                        {analysisResult.risks.map((s, idx) => (
+                          <li key={idx}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {analysisResult.focus?.length ? (
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase text-zinc-700">
+                        Focos 90 días
+                      </div>
+                      <ul className="mt-1 list-disc space-y-1 pl-4">
+                        {analysisResult.focus.map((s, idx) => (
+                          <li key={idx}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {analysisResult.actions?.length ? (
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase text-zinc-700">
+                        Recomendaciones
+                      </div>
+                      <ul className="mt-1 list-disc space-y-1 pl-4">
+                        {analysisResult.actions.map((s, idx) => (
+                          <li key={idx}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {analysisResult.raw && (
+                    <details className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-[11px] text-zinc-600">
+                      <summary className="cursor-pointer font-semibold text-zinc-700">
+                        Ver JSON completo
+                      </summary>
+                      <pre className="mt-2 whitespace-pre-wrap break-words text-[11px]">
+                        {JSON.stringify(analysisResult.raw, null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                </div>
+              ) : (
+                !analysisLoading && (
+                  <p className="text-sm text-zinc-700">
+                    Aún no hay análisis. Ejecuta “Analizar” para generar uno.
+                  </p>
+                )
+              )}
             </div>
           </div>
         </div>
