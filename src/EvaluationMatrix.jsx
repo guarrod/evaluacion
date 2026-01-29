@@ -21,6 +21,7 @@ const VERSION_SEMVER = VERSION_INFO.semver || "0.0.0";
 const VERSION_LABEL = VERSION_INFO.label || `v${VERSION_SEMVER}`;
 const VERSION_FULL = VERSION_INFO.full || `${VERSION_LABEL}+${VERSION_INFO.build || "dev"}`;
 const API_BASE = import.meta.env.VITE_API_BASE || "";
+const AI_ICON = new URL("/ai.svg", import.meta.env.BASE_URL).toString();
 
 const SCALE = [1, 2, 3, 4, 5];
 
@@ -744,7 +745,7 @@ export default function EvaluationMatrix() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 text-xs font-medium text-zinc-600">
-                  <img src="/ai.svg" alt="IA" className="h-4 w-4" />
+                  <img src={AI_ICON} alt="IA" className="h-4 w-4" />
                   <span>Análisis IA (beta)</span>
                 </div>
                 <p className="text-sm text-zinc-700">Usa tu proxy /api/analyze con OPENAI_API_KEY.</p>
@@ -767,9 +768,7 @@ export default function EvaluationMatrix() {
             <div className="mt-3 text-xs text-zinc-600">
               {analysisResult ? (
                 <div className="flex items-center justify-between">
-                  <span>
-                    
-                  </span>
+                  <span>Último análisis disponible. Modelo: {analysisModel || "desconocido"}.</span>
                   <button
                     onClick={() => setShowAnalysisModal(true)}
                     className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-50"
