@@ -295,9 +295,16 @@ export default function EvaluationMatrix() {
       return [normalizeItem(val)].filter(Boolean);
     };
     const summary = normalizeItem(raw.summary);
+    const overallScore =
+      typeof raw.overallScore === "number"
+        ? raw.overallScore
+        : typeof raw.score === "number"
+        ? raw.score
+        : null;
 
     return {
       summary,
+      overallScore,
       strengths: ensureArray(raw.strengths),
       risks: ensureArray(raw.risks),
       focus: ensureArray(raw.focus || raw.focusAreas),
@@ -305,6 +312,24 @@ export default function EvaluationMatrix() {
       raw,
     };
   }
+
+  const formatAction = (item) => {
+    if (!item) return "";
+    let obj = null;
+    if (typeof item === "string") {
+      try {
+        obj = JSON.parse(item);
+      } catch {
+        obj = null;
+      }
+    }
+    if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+      return Object.entries(obj)
+        .map(([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`)
+        .join(" • ");
+    }
+    return item;
+  };
 
   const layers = useMemo(() => {
     const unique = Array.from(new Set(criteria.map((c) => c.layer)));
@@ -1064,11 +1089,11 @@ export default function EvaluationMatrix() {
 
       {showAnalysisModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
-          <div className="w-full max-w-4xl rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="text-sm font-semibold text-zinc-900">Análisis IA</div>
-                <p className="text-xs text-zinc-600">
+                  <div className="w-full max-w-4xl rounded-3xl bg-white p-6 shadow-2xl">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-zinc-900">Análisis IA</div>
+                        <p className="text-xs text-zinc-600">
                   Resumen generado por el modelo (sin PII a menos que la escribas).
                 </p>
               </div>
@@ -1081,14 +1106,14 @@ export default function EvaluationMatrix() {
             </div>
 
             <div className="mt-3 text-xs text-zinc-700">
-              <div className="mb-3 flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
-                <span className="font-semibold text-zinc-800">
-                  {analysisLoading ? "Generando análisis…" : "Análisis más reciente"}
-                </span>
-                <div className="text-[11px] text-zinc-500">
-                  Modelo: {analysisModel || "desconocido"}
-                </div>
-              </div>
+                  <div className="mb-3 flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+                    <span className="font-semibold text-zinc-800">
+                      {analysisLoading ? "Generando análisis…" : "Análisis más reciente"}
+                    </span>
+                    <div className="text-[11px] text-zinc-500">
+                      Modelo: {analysisModel || "desconocido"}
+                    </div>
+                  </div>
 
               {analysisError && (
                 <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
@@ -1100,13 +1125,27 @@ export default function EvaluationMatrix() {
                 <p className="text-sm text-zinc-700">Procesando…</p>
               )}
 
-              {analysisResult ? (
-                <div className="space-y-3">
-                  {analysisResult.summary && (
-                    <p className="text-sm font-semibold text-zinc-900">
-                      {analysisResult.summary}
-                    </p>
-                  )}
+                  {analysisResult ? (
+                    <div className="space-y-3">
+                      {typeof analysisResult.overallScore === "number" && (
+                        <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                          <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                            Score IA
+                          </div>
+                          <div className="mt-1 flex items-baseline gap-2">
+                            <span className="text-2xl font-semibold text-zinc-900">
+                              {analysisResult.overallScore.toFixed(2)}
+                            </span>
+                            <span className="text-xs text-zinc-500">/5</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {analysisResult.summary && (
+                        <p className="text-sm font-semibold text-zinc-900">
+                          {analysisResult.summary}
+                        </p>
+                      )}
 
                   {analysisResult.strengths?.length ? (
                     <div>
@@ -1154,7 +1193,7 @@ export default function EvaluationMatrix() {
                       </div>
                       <ul className="mt-1 list-disc space-y-1 pl-4">
                         {analysisResult.actions.map((s, idx) => (
-                          <li key={idx}>{s}</li>
+                          <li key={idx}>{formatAction(s)}</li>
                         ))}
                       </ul>
                     </div>
