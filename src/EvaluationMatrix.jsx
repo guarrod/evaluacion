@@ -377,7 +377,7 @@ export default function EvaluationMatrix() {
   const overallLabel = useMemo(() => {
     const rounded = Math.round(computed.overall);
     if (!rounded) return "Sin calificar";
-    return `${rounded} – ${scoreLabel(rounded)}`;
+    return `${scoreLabel(rounded)}`;
   }, [computed.overall]);
 
   const exportObject = useMemo(
@@ -681,9 +681,13 @@ export default function EvaluationMatrix() {
                   Resultado general
                 </h1>
                 <div className="mt-1 flex items-baseline gap-2 text-hero font-semibold">
-                  <span>{computed.overall ? computed.overall.toFixed(1) : "—"}</span>
+                  <span>
+                    {computed.filledCount > 0 && computed.overall
+                      ? computed.overall.toFixed(1)
+                      : "—"}
+                  </span>
                   <span className="text-sm text-zinc-500">
-                    /5
+                    {computed.filledCount > 0 ? "/ 5" : "Sin calificaciones"}
                   </span>
                 </div>
                 <div className="mt-1 text-sm text-zinc-700">{overallLabel}</div>
