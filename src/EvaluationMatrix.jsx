@@ -297,7 +297,17 @@ export default function EvaluationMatrix() {
       if (Array.isArray(val)) return val.map(normalizeItem).filter(Boolean);
       return [normalizeItem(val)].filter(Boolean);
     };
-    const summary = normalizeItem(raw.summary);
+    let summarySource = raw.summary;
+    if (summarySource && typeof summarySource === "object" && !Array.isArray(summarySource)) {
+      summarySource =
+        summarySource.summary ||
+        summarySource.overview ||
+        summarySource.comment ||
+        summarySource.strengths ||
+        Object.values(summarySource).find((v) => typeof v === "string") ||
+        summarySource;
+    }
+    const summary = normalizeItem(summarySource);
     const overallScore =
       typeof raw.overallScore === "number"
         ? raw.overallScore
