@@ -675,13 +675,16 @@ export default function EvaluationMatrix() {
         {/* Summary */}
         <section className="mb-6 grid grid-cols-1 gap-3 lg:grid-cols-4">
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start justify-between gap-1">
               <div>
-                <div className="text-xs font-medium text-zinc-600">
+                <h1 className="font-semibold text-base">
                   Resultado general
-                </div>
-                <div className="mt-1 text-2xl font-semibold">
-                  {computed.overall ? computed.overall.toFixed(2) : "—"}
+                </h1>
+                <div className="mt-1 flex items-baseline gap-2 text-hero font-semibold">
+                  <span>{computed.overall ? computed.overall.toFixed(2) : "—"}</span>
+                  <span className="text-sm text-zinc-500">
+                    /{computed.filledCount || 0}
+                  </span>
                 </div>
                 <div className="mt-1 text-sm text-zinc-700">{overallLabel}</div>
               </div>
@@ -703,7 +706,10 @@ export default function EvaluationMatrix() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-            <div className="text-xs font-medium text-zinc-600">Por capas</div>
+            
+            <h1 className="font-semibold text-base">
+                  Por capas
+                </h1>
             <div className="mt-3 space-y-3">
               {layers.map((layer) => {
                 const s = computed.perLayer[layer]?.score || 0;
@@ -729,9 +735,10 @@ export default function EvaluationMatrix() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-            <div className="text-xs font-medium text-zinc-600">
-              Lectura rápida
-            </div>
+            
+            <h1 className="font-semibold text-base">
+                  Lectura rápida
+                </h1>
             <div className="mt-3 space-y-2 text-sm text-zinc-700">
               <p>
                 <span className="font-medium">Entrega</span> alta +{" "}
@@ -752,9 +759,12 @@ export default function EvaluationMatrix() {
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="items-start justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2 text-xs font-medium text-zinc-600">
+                <div className="flex items-center gap-2 text-xs font-medium">
                   <img src={aiIcon} alt="IA" className="h-4 w-4" />
-                  <span>Análisis IA (beta)</span>
+                  
+                  <h1 className="font-semibold text-base">
+                  Análisis IA (beta)
+                </h1>
                 </div>
               </div>
               <button
