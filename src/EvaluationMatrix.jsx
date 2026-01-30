@@ -681,9 +681,9 @@ export default function EvaluationMatrix() {
                   Resultado general
                 </h1>
                 <div className="mt-1 flex items-baseline gap-2 text-hero font-semibold">
-                  <span>{computed.overall ? computed.overall.toFixed(2) : "—"}</span>
+                  <span>{computed.overall ? computed.overall.toFixed(1) : "—"}</span>
                   <span className="text-sm text-zinc-500">
-                    /{computed.filledCount || 0}
+                    /5
                   </span>
                 </div>
                 <div className="mt-1 text-sm text-zinc-700">{overallLabel}</div>
