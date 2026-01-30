@@ -1148,9 +1148,14 @@ export default function EvaluationMatrix() {
                   )}
 
                   {analysisResult.summary && (
-                    <p className="text-sm font-semibold text-zinc-900">
-                      {analysisResult.summary}
-                    </p>
+                    <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                      <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                        Resumen
+                      </div>
+                      <p className="mt-1 text-sm font-semibold text-zinc-900">
+                        {analysisResult.summary}
+                      </p>
+                    </div>
                   )}
 
                   {analysisResult.narrative && (
