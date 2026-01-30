@@ -302,11 +302,13 @@ export default function EvaluationMatrix() {
       typeof raw.overallScore === "number"
         ? raw.overallScore
         : typeof raw.score === "number"
-          ? raw.score
-          : null;
+        ? raw.score
+        : null;
+    const narrative = normalizeItem(raw.narrative || raw.note);
 
     return {
       summary,
+      narrative,
       overallScore,
       strengths: ensureArray(raw.strengths),
       risks: ensureArray(raw.risks),
@@ -677,17 +679,17 @@ export default function EvaluationMatrix() {
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="flex items-start justify-between gap-1">
               <div>
-                <h1 className="font-semibold text-base">Resultado general</h1>
-                <div className="flex">
+                <h1 className="font-semibold text-base mb-3">Resultado general</h1>
+                <div className="flex gap-4">
                   {computed.overall ? (
                     <div className="flex">
                       <div className="mt-1 flex items-baseline gap-2 text-hero font-semibold">
                         <span>{computed.overall.toFixed(1)}</span>
-                        <span className="text-2xl text-zinc-500">/5</span>
+                        <span className="text-2xl text-zinc-500 m-auto">/5</span>
                       </div>
                     </div>
                   ) : null}
-                  <div className="flex p-6">
+                  <div className="flex">
                   <div className={`mt-1 m-auto h-6 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${badgeClass(Math.round(computed.overall || 0))}`}>
                         {computed.overall ? `${overallLabel}` : "Pendiente"}
                       </div>
@@ -1108,9 +1110,6 @@ export default function EvaluationMatrix() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-sm font-semibold text-zinc-900">Análisis IA</div>
-                <p className="text-xs text-zinc-600">
-                  Resumen generado por el modelo (sin PII a menos que la escribas).
-                </p>
               </div>
               <button
                 onClick={() => setShowAnalysisModal(false)}
@@ -1121,14 +1120,6 @@ export default function EvaluationMatrix() {
             </div>
 
             <div className="mt-3 text-xs text-zinc-700">
-              <div className="mb-3 flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
-                <span className="font-semibold text-zinc-800">
-                  {analysisLoading ? "Generando análisis…" : "Análisis más reciente"}
-                </span>
-                <div className="text-[11px] text-zinc-500">
-                  Modelo: {analysisModel || "desconocido"}
-                </div>
-              </div>
 
               {analysisError && (
                 <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
@@ -1159,6 +1150,12 @@ export default function EvaluationMatrix() {
                   {analysisResult.summary && (
                     <p className="text-sm font-semibold text-zinc-900">
                       {analysisResult.summary}
+                    </p>
+                  )}
+
+                  {analysisResult.narrative && (
+                    <p className="text-sm text-zinc-700">
+                      {analysisResult.narrative}
                     </p>
                   )}
 
