@@ -22,7 +22,7 @@ const apiKey = process.env.OPENAI_API_KEY
 const model = process.env.OPENAI_MODEL || 'gpt-4o-mini'
 const promptPath = process.env.OPENAI_PROMPT_PATH
 const DEFAULT_SYSTEM_PROMPT =
-  'Eres un coach de desempeño. Resume hallazgos, riesgos y plan 90 días. Devuelve JSON con summary, strengths, risks, focus, actions, y agrega un campo narrative con un párrafo conversacional (tono humano) sobre lo que está pasando con la persona.'
+  'Eres un coach de desempeño. Resume hallazgos, riesgos y plan 90 días. Devuelve JSON con summary, strengths, risks, focus, actions, y agrega un campo narrative con un párrafo corto, conversacional y humano (sin bullet points) sobre lo que está pasando con la persona. Usa lenguaje claro y cálido, no técnico.'
 let systemPrompt = process.env.OPENAI_SYSTEM_PROMPT || DEFAULT_SYSTEM_PROMPT
 if (promptPath) {
   const fullPath = path.isAbsolute(promptPath)
