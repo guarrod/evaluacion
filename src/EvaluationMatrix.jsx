@@ -302,8 +302,8 @@ export default function EvaluationMatrix() {
       typeof raw.overallScore === "number"
         ? raw.overallScore
         : typeof raw.score === "number"
-        ? raw.score
-        : null;
+          ? raw.score
+          : null;
 
     return {
       summary,
@@ -481,11 +481,11 @@ export default function EvaluationMatrix() {
       setAllowExtremeWeights(!!parsed.allowExtremeWeights);
       setWeightPreset(parsed.weightPreset || "custom");
       setStrengths(typeof parsed.strengths === "string" ? parsed.strengths : "");
-    setFocusAreas(typeof parsed.focusAreas === "string" ? parsed.focusAreas : "");
+      setFocusAreas(typeof parsed.focusAreas === "string" ? parsed.focusAreas : "");
 
-    // Merge by id to preserve defaults if missing.
-    const incoming = Array.isArray(parsed.criteria) ? parsed.criteria : [];
-    setCriteria((prev) =>
+      // Merge by id to preserve defaults if missing.
+      const incoming = Array.isArray(parsed.criteria) ? parsed.criteria : [];
+      setCriteria((prev) =>
         prev.map((c) => {
           const hit = incoming.find((x) => x.id === c.id);
           if (!hit) return c;
@@ -677,28 +677,24 @@ export default function EvaluationMatrix() {
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
             <div className="flex items-start justify-between gap-1">
               <div>
-                <h1 className="font-semibold text-base">
-                  Resultado general
-                </h1>
-                <div className="mt-1 flex items-baseline gap-2 text-hero font-semibold">
-                  <span>
-                    {computed.filledCount > 0 && computed.overall
-                      ? computed.overall.toFixed(1)
-                      : "—"}
-                  </span>
-                  <span className="text-sm text-zinc-500">
-                    {computed.filledCount > 0 ? "/ 5" : "Sin calificaciones"}
-                  </span>
+                <h1 className="font-semibold text-base">Resultado general</h1>
+                <div className="flex">
+                  {computed.overall ? (
+                    <div className="flex">
+                      <div className="mt-1 flex items-baseline gap-2 text-hero font-semibold">
+                        <span>{computed.overall.toFixed(1)}</span>
+                        <span className="text-2xl text-zinc-500">/5</span>
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="flex p-6">
+                  <div className={`mt-1 m-auto h-6 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${badgeClass(Math.round(computed.overall || 0))}`}>
+                        {computed.overall ? `${overallLabel}` : "Pendiente"}
+                      </div>
+                  </div>
+                  </div>
+                  
                 </div>
-                <div className="mt-1 text-sm text-zinc-700">{overallLabel}</div>
-              </div>
-              <div
-                className={`mt-1 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${
-                  badgeClass(Math.round(computed.overall || 0))
-                }`}
-              >
-                {computed.overall ? "Calificado" : "Pendiente"}
-              </div>
             </div>
             <div className="mt-3 text-sm text-zinc-600">
               {computed.missing > 0 ? (
@@ -710,10 +706,10 @@ export default function EvaluationMatrix() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-            
+
             <h1 className="font-semibold text-base">
-                  Por capas
-                </h1>
+              Por capas
+            </h1>
             <div className="mt-3 space-y-3">
               {layers.map((layer) => {
                 const s = computed.perLayer[layer]?.score || 0;
@@ -739,10 +735,10 @@ export default function EvaluationMatrix() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-            
+
             <h1 className="font-semibold text-base">
-                  Lectura rápida
-                </h1>
+              Lectura rápida
+            </h1>
             <div className="mt-3 space-y-2 text-sm text-zinc-700">
               <p>
                 <span className="font-medium">Entrega</span> alta +{" "}
@@ -765,10 +761,10 @@ export default function EvaluationMatrix() {
               <div>
                 <div className="flex items-center gap-2 text-xs font-medium">
                   <img src={aiIcon} alt="IA" className="h-4 w-4" />
-                  
+
                   <h1 className="font-semibold text-base">
-                  Análisis IA (beta)
-                </h1>
+                    Análisis IA (beta)
+                  </h1>
                 </div>
               </div>
               <button
@@ -800,7 +796,7 @@ export default function EvaluationMatrix() {
               ) : (
                 <span>
                   Genera un análisis automático del reporte para identificar focos y posibles acciones.
-Este resultado es una referencia de apoyo y debe ser contrastado con criterio humano.
+                  Este resultado es una referencia de apoyo y debe ser contrastado con criterio humano.
                 </span>
               )}
             </div>
@@ -1108,11 +1104,11 @@ Este resultado es una referencia de apoyo y debe ser contrastado con criterio hu
 
       {showAnalysisModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
-                  <div className="w-full max-w-4xl rounded-3xl bg-white p-6 shadow-2xl">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold text-zinc-900">Análisis IA</div>
-                        <p className="text-xs text-zinc-600">
+          <div className="w-full max-w-4xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-zinc-900">Análisis IA</div>
+                <p className="text-xs text-zinc-600">
                   Resumen generado por el modelo (sin PII a menos que la escribas).
                 </p>
               </div>
@@ -1125,14 +1121,14 @@ Este resultado es una referencia de apoyo y debe ser contrastado con criterio hu
             </div>
 
             <div className="mt-3 text-xs text-zinc-700">
-                  <div className="mb-3 flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
-                    <span className="font-semibold text-zinc-800">
-                      {analysisLoading ? "Generando análisis…" : "Análisis más reciente"}
-                    </span>
-                    <div className="text-[11px] text-zinc-500">
-                      Modelo: {analysisModel || "desconocido"}
-                    </div>
-                  </div>
+              <div className="mb-3 flex items-center justify-between rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+                <span className="font-semibold text-zinc-800">
+                  {analysisLoading ? "Generando análisis…" : "Análisis más reciente"}
+                </span>
+                <div className="text-[11px] text-zinc-500">
+                  Modelo: {analysisModel || "desconocido"}
+                </div>
+              </div>
 
               {analysisError && (
                 <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
@@ -1144,27 +1140,27 @@ Este resultado es una referencia de apoyo y debe ser contrastado con criterio hu
                 <p className="text-sm text-zinc-700">Procesando…</p>
               )}
 
-                  {analysisResult ? (
-                    <div className="space-y-3">
-                      {typeof analysisResult.overallScore === "number" && (
-                        <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
-                          <div className="text-[11px] font-semibold uppercase text-zinc-600">
-                            Score IA
-                          </div>
-                          <div className="mt-1 flex items-baseline gap-2">
-                            <span className="text-2xl font-semibold text-zinc-900">
-                              {analysisResult.overallScore.toFixed(2)}
-                            </span>
-                            <span className="text-xs text-zinc-500">/5</span>
-                          </div>
-                        </div>
-                      )}
+              {analysisResult ? (
+                <div className="space-y-3">
+                  {typeof analysisResult.overallScore === "number" && (
+                    <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                      <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                        Score IA
+                      </div>
+                      <div className="mt-1 flex items-baseline gap-2">
+                        <span className="text-2xl font-semibold text-zinc-900">
+                          {analysisResult.overallScore.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-zinc-500">/5</span>
+                      </div>
+                    </div>
+                  )}
 
-                      {analysisResult.summary && (
-                        <p className="text-sm font-semibold text-zinc-900">
-                          {analysisResult.summary}
-                        </p>
-                      )}
+                  {analysisResult.summary && (
+                    <p className="text-sm font-semibold text-zinc-900">
+                      {analysisResult.summary}
+                    </p>
+                  )}
 
                   {analysisResult.strengths?.length ? (
                     <div>
