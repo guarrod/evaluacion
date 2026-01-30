@@ -297,17 +297,34 @@ export default function EvaluationMatrix() {
       if (Array.isArray(val)) return val.map(normalizeItem).filter(Boolean);
       return [normalizeItem(val)].filter(Boolean);
     };
-    let summarySource = raw.summary;
-    if (summarySource && typeof summarySource === "object" && !Array.isArray(summarySource)) {
-      summarySource =
-        summarySource.summary ||
-        summarySource.overview ||
-        summarySource.comment ||
-        summarySource.strengths ||
-        Object.values(summarySource).find((v) => typeof v === "string") ||
-        summarySource;
+    let summaryText = "";
+    if (raw.summary) {
+      if (typeof raw.summary === "object" && !Array.isArray(raw.summary)) {
+        summaryText =
+          raw.summary.summary ||
+          raw.summary.overview ||
+          raw.summary.comment ||
+          raw.summary.strengths ||
+          raw.summary.focus ||
+          raw.summary.actions ||
+          Object.values(raw.summary).find((v) => typeof v === "string") ||
+          "";
+      } else {
+        summaryText = raw.summary;
+      }
     }
-    const summary = normalizeItem(summarySource);
+    if (!summaryText && raw.narrative) {
+      summaryText = raw.narrative;
+    }
+    if (!summaryText && raw.strengths) {
+      const arr = ensureArray(raw.strengths);
+      summaryText = arr.slice(0, 2).join(" ");
+    }
+    if (!summaryText && raw.focus) {
+      const arr = ensureArray(raw.focus);
+      summaryText = arr.slice(0, 1).join(" ");
+    }
+    const summary = normalizeItem(summaryText);
     const overallScore =
       typeof raw.overallScore === "number"
         ? raw.overallScore
