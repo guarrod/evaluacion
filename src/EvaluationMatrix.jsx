@@ -17,17 +17,12 @@ const VERSION_INFO =
     ? __APP_VERSION__
     : { semver: "0.0.0", build: "dev", label: "v0.0.0", full: "v0.0.0+dev" };
 
+import aiIcon from "./assets/ai.svg";
+
 const VERSION_SEMVER = VERSION_INFO.semver || "0.0.0";
 const VERSION_LABEL = VERSION_INFO.label || `v${VERSION_SEMVER}`;
 const VERSION_FULL = VERSION_INFO.full || `${VERSION_LABEL}+${VERSION_INFO.build || "dev"}`;
 const API_BASE = import.meta.env.VITE_API_BASE || "";
-const AI_ICON = (() => {
-  try {
-    return new URL("ai.svg", import.meta.env.BASE_URL || "/").toString();
-  } catch {
-    return "/ai.svg";
-  }
-})();
 
 const SCALE = [1, 2, 3, 4, 5];
 
@@ -751,7 +746,7 @@ export default function EvaluationMatrix() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 text-xs font-medium text-zinc-600">
-                  <img src={AI_ICON} alt="IA" className="h-4 w-4" />
+                  <img src={aiIcon} alt="IA" className="h-4 w-4" />
                   <span>Análisis IA (beta)</span>
                 </div>
                 <p className="text-sm text-zinc-700">Usa tu proxy /api/analyze con OPENAI_API_KEY.</p>
