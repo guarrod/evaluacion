@@ -254,6 +254,7 @@ export default function EvaluationMatrix() {
     project: "",
     period: "",
     evaluator: "",
+    coEvaluator: "",
     createdAt: new Date().toISOString().slice(0, 10),
   });
 
@@ -566,7 +567,7 @@ export default function EvaluationMatrix() {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 rounded-2xl border border-zinc-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-6">
             <Field
               label="Evaluado"
               value={meta.evaluateeName}
@@ -590,6 +591,12 @@ export default function EvaluationMatrix() {
               value={meta.evaluator}
               onChange={(v) => setMeta((m) => ({ ...m, evaluator: v }))}
               placeholder="Tu nombre"
+            />
+            <Field
+              label="Co-evaluador"
+              value={meta.coEvaluator}
+              onChange={(v) => setMeta((m) => ({ ...m, coEvaluator: v }))}
+              placeholder="Nombre del co-evaluador"
             />
           </div>
 
@@ -743,18 +750,17 @@ export default function EvaluationMatrix() {
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-            <div className="flex items-start justify-between gap-3">
+            <div className="items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 text-xs font-medium text-zinc-600">
                   <img src={aiIcon} alt="IA" className="h-4 w-4" />
                   <span>Análisis IA (beta)</span>
                 </div>
-                <p className="text-sm text-zinc-700">Usa tu proxy /api/analyze con OPENAI_API_KEY.</p>
               </div>
               <button
                 onClick={analyzeWithAI}
                 disabled={analysisLoading}
-                className="rounded-xl bg-zinc-900 px-3 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
+                className="rounded-xl bg-zinc-900 px-3 mt-3 py-2 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
               >
                 {analysisLoading ? "Analizando…" : "Analizar"}
               </button>
@@ -779,8 +785,8 @@ export default function EvaluationMatrix() {
                 </div>
               ) : (
                 <span>
-                  Requiere que el backend (server.js) corra con OPENAI_API_KEY. No envía PII a menos
-                  que la escribas en la evaluación.
+                  Genera un análisis automático del reporte para identificar focos y posibles acciones.
+Este resultado es una referencia de apoyo y debe ser contrastado con criterio humano.
                 </span>
               )}
             </div>
