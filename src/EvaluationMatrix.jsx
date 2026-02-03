@@ -1244,14 +1244,14 @@ export default function EvaluationMatrix() {
                   ) : null}
 
                   {analysisResult.raw && (
-                    <details className="rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-2 text-[11px] text-zinc-600">
-                      <summary className="cursor-pointer font-semibold text-zinc-700">
-                        Ver JSON completo
-                      </summary>
+                    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-[11px] text-zinc-700">
+                      <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                        Detalle (JSON)
+                      </div>
                       <pre className="mt-2 whitespace-pre-wrap break-words text-[11px]">
                         {JSON.stringify(analysisResult.raw, null, 2)}
                       </pre>
-                    </details>
+                    </div>
                   )}
                 </div>
               ) : (
