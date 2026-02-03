@@ -1198,90 +1198,99 @@ export default function EvaluationMatrix() {
                     </div>
                   )}
 
-                  {analysisResult.summary && (
-                    <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
-                      <div className="text-[11px] font-semibold uppercase text-zinc-600">
-                        Resumen
+                  <div className="analisi">
+                    {analysisResult.summary && (
+                      <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                        <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                          Resumen
+                        </div>
+                        <p className="mt-1 text-sm font-semibold text-zinc-900">
+                          {analysisResult.summary}
+                        </p>
                       </div>
-                      <p className="mt-1 text-sm font-semibold text-zinc-900">
-                        {analysisResult.summary}
-                      </p>
-                    </div>
-                  )}
+                    )}
 
-                  {analysisResult.narrative && (
-                    <p className="text-sm text-zinc-700">
-                      {analysisResult.narrative}
-                    </p>
-                  )}
+                    {analysisResult.narrative && (
+                      <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                        <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                          Lectura conversacional
+                        </div>
+                        <p className="mt-1 text-sm text-zinc-700">{analysisResult.narrative}</p>
+                      </div>
+                    )}
 
-                  {analysisResult.strengths?.length ? (
-                    <div>
-                      <div className="text-[11px] font-semibold uppercase text-emerald-700">
-                        Fortalezas
+                    {analysisResult.strengths?.length ? (
+                      <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                        <div className="text-[11px] font-semibold uppercase text-emerald-700">
+                          Fortalezas
+                        </div>
+                        <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-zinc-800">
+                          {analysisResult.strengths.map((s, idx) => (
+                            <li key={idx}>{s}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="mt-1 list-disc space-y-1 pl-4">
-                        {analysisResult.strengths.map((s, idx) => (
-                          <li key={idx}>{s}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
+                    ) : null}
 
-                  {analysisResult.risks?.length ? (
-                    <div>
-                      <div className="text-[11px] font-semibold uppercase text-amber-700">
-                        Riesgos
+                    {analysisResult.risks?.length ? (
+                      <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                        <div className="text-[11px] font-semibold uppercase text-amber-700">
+                          Riesgos
+                        </div>
+                        <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-zinc-800">
+                          {analysisResult.risks.map((s, idx) => (
+                            <li key={idx}>{s}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="mt-1 list-disc space-y-1 pl-4">
-                        {analysisResult.risks.map((s, idx) => (
-                          <li key={idx}>{s}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
+                    ) : null}
 
-                  {analysisResult.focus?.length ? (
-                    <div>
-                      <div className="text-[11px] font-semibold uppercase text-zinc-700">
-                        Focos 90 días
+                    {analysisResult.focus?.length ? (
+                      <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                        <div className="text-[11px] font-semibold uppercase text-zinc-700">
+                          Focos 90 días
+                        </div>
+                        <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-zinc-800">
+                          {analysisResult.focus.map((s, idx) => (
+                            <li key={idx}>{s}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="mt-1 list-disc space-y-1 pl-4">
-                        {analysisResult.focus.map((s, idx) => (
-                          <li key={idx}>{s}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
+                    ) : null}
 
-                  {analysisResult.actions?.length ? (
-                    <div>
-                      <div className="text-[11px] font-semibold uppercase text-zinc-700">
-                        Recomendaciones
+                    {analysisResult.actions?.length ? (
+                      <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
+                        <div className="text-[11px] font-semibold uppercase text-zinc-700">
+                          Palancas de mejora (acciones medibles)
+                        </div>
+                        <ol className="mt-1 list-decimal space-y-1 pl-5 text-sm text-zinc-800">
+                          {analysisResult.actions.map((s, idx) => (
+                            <li key={idx}>{formatAction(s)}</li>
+                          ))}
+                        </ol>
                       </div>
-                      <ul className="mt-1 list-disc space-y-1 pl-4">
-                        {analysisResult.actions.map((s, idx) => (
-                          <li key={idx}>{formatAction(s)}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
+                    ) : null}
 
-                  {analysisResult.raw && (
-                    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-xs text-zinc-700">
-                      <div className="text-[11px] font-semibold uppercase text-zinc-600">
-                        Detalle
+                    {analysisResult.raw && (
+                      <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-xs text-zinc-700">
+                        <div className="text-[11px] font-semibold uppercase text-zinc-600">
+                          Detalle
+                        </div>
+                        <div className="mt-2 space-y-1">
+                          {Object.entries(analysisResult.raw).map(([key, value]) => (
+                            <div key={key} className="leading-tight">
+                              <span className="font-semibold text-zinc-800 capitalize">
+                                {key}:{" "}
+                              </span>
+                              <span className="text-zinc-700">{formatDetailValue(value)}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="mt-2 space-y-1">
-                        {Object.entries(analysisResult.raw).map(([key, value]) => (
-                          <div key={key} className="leading-tight">
-                            <span className="font-semibold text-zinc-800">{key}: </span>
-                            <span className="text-zinc-700">{formatDetailValue(value)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+
+                  
                 </div>
               ) : (
                 !analysisLoading && (
