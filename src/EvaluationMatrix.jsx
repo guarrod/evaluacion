@@ -1198,7 +1198,7 @@ export default function EvaluationMatrix() {
                     </div>
                   )}
 
-                  <div className="analisi">
+                  <div className="analisi max-h-[70vh] overflow-y-auto space-y-3">
                     {analysisResult.summary && (
                       <div className="rounded-2xl border border-zinc-200 bg-white px-4 py-3">
                         <div className="text-[11px] font-semibold uppercase text-zinc-600">
