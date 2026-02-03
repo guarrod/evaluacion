@@ -363,20 +363,46 @@ export default function EvaluationMatrix() {
 
   const formatAction = (item) => {
     if (!item) return "";
-    let obj = null;
+    const toSentence = (obj) => {
+      if (!obj || typeof obj !== "object" || Array.isArray(obj)) return null;
+      const action =
+        obj.action || obj.task || obj.step || obj.recommendation || obj.description || obj.title;
+      const owner = obj.owner || obj.responsible || obj.who;
+      const when = obj.timeline || obj.when || obj.eta || obj.deadline || obj.due;
+      const expected = obj.outcome || obj.result || obj.success || obj.metric;
+      const parts = [];
+      if (action) parts.push(action);
+      if (owner) parts.push(`Responsable: ${owner}`);
+      if (when) parts.push(`Plazo: ${when}`);
+      if (expected) parts.push(`Resultado: ${expected}`);
+      return parts.join(" · ");
+    };
+
     if (typeof item === "string") {
       try {
-        obj = JSON.parse(item);
+        const parsed = JSON.parse(item);
+        const sentence = toSentence(parsed);
+        if (sentence) return sentence;
+        return item;
       } catch {
-        obj = null;
+        return item;
       }
     }
-    if (obj && typeof obj === "object" && !Array.isArray(obj)) {
-      return Object.entries(obj)
-        .map(([k, v]) => `${typeof v === "string" ? v : JSON.stringify(v)}`)
-        .join(" • ");
+
+    const sentence = toSentence(item);
+    if (sentence) return sentence;
+
+    if (Array.isArray(item)) {
+      return item
+        .map((v) => toSentence(v) || (typeof v === "object" ? JSON.stringify(v) : String(v)))
+        .join(" · ");
     }
-    return item;
+
+    try {
+      return JSON.stringify(item);
+    } catch {
+      return String(item);
+    }
   };
 
   const layers = useMemo(() => {
