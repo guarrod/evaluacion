@@ -541,11 +541,14 @@ export default function EvaluationMatrix() {
     setAnalysisError("");
     setAnalysisResult(null);
     setShowAnalysisModal(true);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 45000);
     try {
       const res = await fetch(`${API_BASE}/api/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ evaluation: exportObject }),
+        signal: controller.signal,
       });
       const data = await res.json();
       if (!res.ok) {
@@ -554,8 +557,13 @@ export default function EvaluationMatrix() {
       setAnalysisModel(data?.model || "");
       setAnalysisResult(normalizeAnalysis(data?.analysis));
     } catch (err) {
-      setAnalysisError(err.message || "No se pudo analizar");
+      if (err.name === "AbortError") {
+        setAnalysisError("Tiempo de espera agotado (45s). Revisa si el backend está corriendo o el modelo responde.");
+      } else {
+        setAnalysisError(err.message || "No se pudo analizar");
+      }
     } finally {
+      clearTimeout(timer);
       setAnalysisLoading(false);
     }
   }
