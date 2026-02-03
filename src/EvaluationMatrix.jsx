@@ -280,6 +280,22 @@ export default function EvaluationMatrix() {
   const [analysisModel, setAnalysisModel] = useState("");
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
+  const formatDetailValue = (val) => {
+    if (val === null || val === undefined) return "";
+    if (typeof val === "string") return val;
+    if (typeof val === "number" || typeof val === "boolean") return String(val);
+    if (Array.isArray(val)) {
+      return val
+        .map((v) => (typeof v === "object" ? JSON.stringify(v) : String(v)))
+        .join(" · ");
+    }
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return String(val);
+    }
+  };
+
   function normalizeAnalysis(payload) {
     const raw = payload || {};
     const normalizeItem = (item) => {
@@ -1252,13 +1268,18 @@ export default function EvaluationMatrix() {
                   ) : null}
 
                   {analysisResult.raw && (
-                    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-[11px] text-zinc-700">
+                    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-xs text-zinc-700">
                       <div className="text-[11px] font-semibold uppercase text-zinc-600">
-                        Detalle (JSON)
+                        Detalle
                       </div>
-                      <pre className="mt-2 whitespace-pre-wrap break-words text-[11px]">
-                        {JSON.stringify(analysisResult.raw, null, 2)}
-                      </pre>
+                      <div className="mt-2 space-y-1">
+                        {Object.entries(analysisResult.raw).map(([key, value]) => (
+                          <div key={key} className="leading-tight">
+                            <span className="font-semibold text-zinc-800">{key}: </span>
+                            <span className="text-zinc-700">{formatDetailValue(value)}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
