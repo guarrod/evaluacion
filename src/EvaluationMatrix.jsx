@@ -360,6 +360,7 @@ export default function EvaluationMatrix() {
           <style>
             * { box-sizing: border-box; }
             body { font-family: Arial, sans-serif; color: #0f172a; margin: 24px; }
+            .page { max-width: 920px; margin: 0 auto; }
             h1 { font-size: 20px; margin: 0 0 4px; }
             h2 { font-size: 16px; margin: 24px 0 8px; }
             h3 { font-size: 13px; margin: 0 0 6px; text-transform: uppercase; color: #475569; }
@@ -384,43 +385,45 @@ export default function EvaluationMatrix() {
           </style>
         </head>
         <body>
-          <h1>Matriz de evaluación — UX Designer</h1>
-          <div style="font-size:12px;color:#475569;">Reporte para stakeholders</div>
+          <div class="page">
+            <h1>Matriz de evaluación — UX Designer</h1>
+            <div style="font-size:12px;color:#475569;">Reporte para stakeholders</div>
 
-          <div class="meta">
-            <div><strong>Evaluado:</strong> ${escapeHtml(meta.evaluateeName || "—")}</div>
-            <div><strong>Proyecto / Squad:</strong> ${escapeHtml(meta.project || "—")}</div>
-            <div><strong>Periodo:</strong> ${escapeHtml(meta.period || "—")}</div>
-            <div><strong>Evaluador:</strong> ${escapeHtml(meta.evaluator || "—")}</div>
-            <div><strong>Co-evaluador:</strong> ${escapeHtml(meta.coEvaluator || "—")}</div>
-            <div><strong>Fecha:</strong> ${escapeHtml(meta.createdAt || "—")}</div>
+            <div class="meta">
+              <div><strong>Evaluado:</strong> ${escapeHtml(meta.evaluateeName || "—")}</div>
+              <div><strong>Proyecto / Squad:</strong> ${escapeHtml(meta.project || "—")}</div>
+              <div><strong>Periodo:</strong> ${escapeHtml(meta.period || "—")}</div>
+              <div><strong>Evaluador:</strong> ${escapeHtml(meta.evaluator || "—")}</div>
+              <div><strong>Co-evaluador:</strong> ${escapeHtml(meta.coEvaluator || "—")}</div>
+              <div><strong>Fecha:</strong> ${escapeHtml(meta.createdAt || "—")}</div>
+            </div>
+
+            <div class="summary">
+              <div class="card">
+                <div style="font-size:12px;color:#475569;">Resultado general</div>
+                <div class="score">${computed.overall ? computed.overall.toFixed(2) : "—"} / 5</div>
+                <div style="font-size:12px;color:#475569;">${escapeHtml(overallLabel)}</div>
+              </div>
+              <div class="card">
+                <div style="font-size:12px;color:#475569;">Por capas</div>
+                <ul>${perLayer}</ul>
+              </div>
+              <div class="card">
+                <div style="font-size:12px;color:#475569;">Fortalezas</div>
+                <div style="font-size:12px;">${escapeHtml(strengths || "—")}</div>
+                <div style="font-size:12px;color:#475569;margin-top:6px;">Áreas 90 días</div>
+                <div style="font-size:12px;">${escapeHtml(focusAreas || "—")}</div>
+              </div>
+            </div>
+
+            ${aiSummary}
+            ${aiNarrative}
+
+            <h2>Detalle por criterio</h2>
+            ${criteriaHtml}
+
+            <div class="footer">Generado desde la matriz de evaluación.</div>
           </div>
-
-          <div class="summary">
-            <div class="card">
-              <div style="font-size:12px;color:#475569;">Resultado general</div>
-              <div class="score">${computed.overall ? computed.overall.toFixed(2) : "—"} / 5</div>
-              <div style="font-size:12px;color:#475569;">${escapeHtml(overallLabel)}</div>
-            </div>
-            <div class="card">
-              <div style="font-size:12px;color:#475569;">Por capas</div>
-              <ul>${perLayer}</ul>
-            </div>
-            <div class="card">
-              <div style="font-size:12px;color:#475569;">Fortalezas</div>
-              <div style="font-size:12px;">${escapeHtml(strengths || "—")}</div>
-              <div style="font-size:12px;color:#475569;margin-top:6px;">Áreas 90 días</div>
-              <div style="font-size:12px;">${escapeHtml(focusAreas || "—")}</div>
-            </div>
-          </div>
-
-          ${aiSummary}
-          ${aiNarrative}
-
-          <h2>Detalle por criterio</h2>
-          ${criteriaHtml}
-
-          <div class="footer">Generado desde la matriz de evaluación.</div>
         </body>
       </html>
     `;
