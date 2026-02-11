@@ -305,13 +305,32 @@ export default function EvaluationMatrix() {
   };
 
   const buildPdfHtml = () => {
+    const listFromText = (text) => {
+      if (!text) return `<div class="muted">—</div>`;
+      const items = String(text)
+        .split(/\n|;|•/g)
+        .map((v) => v.trim())
+        .filter(Boolean);
+      if (items.length <= 1) {
+        return `<div class="muted">${escapeHtml(text)}</div>`;
+      }
+      return `<ul class="clean">${items
+        .map((item) => `<li>${escapeHtml(item)}</li>`)
+        .join("")}</ul>`;
+    };
+
     const perLayer = layers
       .map((layer) => {
         const s = computed.perLayer[layer]?.score || 0;
         const count = computed.perLayer[layer]?.count || 0;
-        return `<li><strong>${escapeHtml(layer)}</strong>: ${
-          count ? s.toFixed(2) : "—"
-        }</li>`;
+        const pct = count ? Math.round((s / 5) * 100) : 0;
+        return `
+          <div class="layer-row">
+            <div class="layer-title">${escapeHtml(layer)}</div>
+            <div class="layer-score">${count ? s.toFixed(2) : "—"}</div>
+          </div>
+          <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+        `;
       })
       .join("");
 
@@ -366,10 +385,19 @@ export default function EvaluationMatrix() {
             h3 { font-size: 13px; margin: 0 0 6px; text-transform: uppercase; color: #475569; }
             .meta { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-top: 12px; }
             .meta div { font-size: 12px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; }
-            .summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 16px; }
-            .card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; }
-            .score { font-size: 22px; font-weight: 700; }
+            .summary { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+            .card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: #fff; }
+            .card.full { grid-column: span 2; }
+            .score { font-size: 26px; font-weight: 700; }
+            .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #f1f5f9; font-size: 11px; color: #475569; }
+            .muted { color: #475569; font-size: 12px; }
             ul { margin: 8px 0 0 18px; }
+            .clean { margin: 8px 0 0 16px; padding: 0; }
+            .layer-row { display: flex; justify-content: space-between; font-size: 12px; color: #0f172a; margin-top: 6px; }
+            .layer-title { font-weight: 600; }
+            .layer-score { color: #475569; }
+            .bar { height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 4px; }
+            .bar-fill { height: 100%; background: #0f172a; }
             .criterion { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; }
             .criterion-header { display: flex; justify-content: space-between; gap: 12px; }
             .criterion-title { font-weight: 700; }
@@ -399,20 +427,20 @@ export default function EvaluationMatrix() {
             </div>
 
             <div class="summary">
-              <div class="card">
+              <div class="card full">
                 <div style="font-size:12px;color:#475569;">Resultado general</div>
-                <div class="score">${computed.overall ? computed.overall.toFixed(2) : "—"} / 5</div>
-                <div style="font-size:12px;color:#475569;">${escapeHtml(overallLabel)}</div>
+                <div class="score">${computed.overall ? computed.overall.toFixed(2) : "—"} <span style="font-size:14px;color:#475569;">/ 5</span></div>
+                <div class="pill">${escapeHtml(overallLabel)}</div>
               </div>
               <div class="card">
                 <div style="font-size:12px;color:#475569;">Por capas</div>
-                <ul>${perLayer}</ul>
+                ${perLayer}
               </div>
               <div class="card">
                 <div style="font-size:12px;color:#475569;">Fortalezas</div>
-                <div style="font-size:12px;">${escapeHtml(strengths || "—")}</div>
-                <div style="font-size:12px;color:#475569;margin-top:6px;">Áreas 90 días</div>
-                <div style="font-size:12px;">${escapeHtml(focusAreas || "—")}</div>
+                ${listFromText(strengths)}
+                <div style="font-size:12px;color:#475569;margin-top:10px;">Áreas 90 días</div>
+                ${listFromText(focusAreas)}
               </div>
             </div>
 
