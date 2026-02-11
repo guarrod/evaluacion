@@ -280,6 +280,14 @@ export default function EvaluationMatrix() {
   const [analysisModel, setAnalysisModel] = useState("");
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 
+  const escapeHtml = (value) =>
+    String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
   const formatDetailValue = (val) => {
     if (val === null || val === undefined) return "";
     if (typeof val === "string") return val;
@@ -294,6 +302,141 @@ export default function EvaluationMatrix() {
     } catch {
       return String(val);
     }
+  };
+
+  const buildPdfHtml = () => {
+    const perLayer = layers
+      .map((layer) => {
+        const s = computed.perLayer[layer]?.score || 0;
+        const count = computed.perLayer[layer]?.count || 0;
+        return `<li><strong>${escapeHtml(layer)}</strong>: ${
+          count ? s.toFixed(2) : "—"
+        }</li>`;
+      })
+      .join("");
+
+    const criteriaHtml = criteria
+      .map((c) => {
+        const scoreText = c.score ? `${c.score} – ${scoreLabel(c.score)}` : "Sin calificar";
+        return `
+          <div class="criterion">
+            <div class="criterion-header">
+              <div>
+                <div class="criterion-title">${escapeHtml(c.name)}</div>
+                <div class="criterion-meta">${escapeHtml(c.layer)} · ${escapeHtml(scoreText)}</div>
+              </div>
+              <div class="criterion-weight">Peso: ${escapeHtml(c.weight)}</div>
+            </div>
+            <div class="criterion-desc">${escapeHtml(c.description)}</div>
+            ${
+              c.evidence
+                ? `<div class="criterion-evidence"><strong>Evidencias:</strong> ${escapeHtml(
+                    c.evidence
+                  )}</div>`
+                : ""
+            }
+          </div>
+        `;
+      })
+      .join("");
+
+    const aiSummary = analysisResult?.summary
+      ? `<div class="block"><h3>Resumen IA</h3><p>${escapeHtml(
+          analysisResult.summary
+        )}</p></div>`
+      : "";
+    const aiNarrative = analysisResult?.narrative
+      ? `<div class="block"><h3>Lectura conversacional</h3><p>${escapeHtml(
+          analysisResult.narrative
+        )}</p></div>`
+      : "";
+
+    return `
+      <!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Matriz de evaluación</title>
+          <style>
+            * { box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; color: #0f172a; margin: 24px; }
+            h1 { font-size: 20px; margin: 0 0 4px; }
+            h2 { font-size: 16px; margin: 24px 0 8px; }
+            h3 { font-size: 13px; margin: 0 0 6px; text-transform: uppercase; color: #475569; }
+            .meta { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-top: 12px; }
+            .meta div { font-size: 12px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 8px; }
+            .summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+            .card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; }
+            .score { font-size: 22px; font-weight: 700; }
+            ul { margin: 8px 0 0 18px; }
+            .criterion { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; }
+            .criterion-header { display: flex; justify-content: space-between; gap: 12px; }
+            .criterion-title { font-weight: 700; }
+            .criterion-meta { font-size: 12px; color: #475569; }
+            .criterion-weight { font-size: 12px; color: #64748b; }
+            .criterion-desc { font-size: 12px; color: #334155; margin-top: 6px; }
+            .criterion-evidence { font-size: 12px; color: #0f172a; margin-top: 8px; }
+            .block { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; }
+            .footer { margin-top: 20px; font-size: 11px; color: #64748b; }
+            @media print {
+              body { margin: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Matriz de evaluación — UX Designer</h1>
+          <div style="font-size:12px;color:#475569;">Reporte para stakeholders</div>
+
+          <div class="meta">
+            <div><strong>Evaluado:</strong> ${escapeHtml(meta.evaluateeName || "—")}</div>
+            <div><strong>Proyecto / Squad:</strong> ${escapeHtml(meta.project || "—")}</div>
+            <div><strong>Periodo:</strong> ${escapeHtml(meta.period || "—")}</div>
+            <div><strong>Evaluador:</strong> ${escapeHtml(meta.evaluator || "—")}</div>
+            <div><strong>Co-evaluador:</strong> ${escapeHtml(meta.coEvaluator || "—")}</div>
+            <div><strong>Fecha:</strong> ${escapeHtml(meta.createdAt || "—")}</div>
+          </div>
+
+          <div class="summary">
+            <div class="card">
+              <div style="font-size:12px;color:#475569;">Resultado general</div>
+              <div class="score">${computed.overall ? computed.overall.toFixed(2) : "—"} / 5</div>
+              <div style="font-size:12px;color:#475569;">${escapeHtml(overallLabel)}</div>
+            </div>
+            <div class="card">
+              <div style="font-size:12px;color:#475569;">Por capas</div>
+              <ul>${perLayer}</ul>
+            </div>
+            <div class="card">
+              <div style="font-size:12px;color:#475569;">Fortalezas</div>
+              <div style="font-size:12px;">${escapeHtml(strengths || "—")}</div>
+              <div style="font-size:12px;color:#475569;margin-top:6px;">Áreas 90 días</div>
+              <div style="font-size:12px;">${escapeHtml(focusAreas || "—")}</div>
+            </div>
+          </div>
+
+          ${aiSummary}
+          ${aiNarrative}
+
+          <h2>Detalle por criterio</h2>
+          ${criteriaHtml}
+
+          <div class="footer">Generado desde la matriz de evaluación.</div>
+        </body>
+      </html>
+    `;
+  };
+
+  const generatePDF = () => {
+    const html = buildPdfHtml();
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => {
+      win.print();
+    }, 300);
   };
 
   function normalizeAnalysis(payload) {
@@ -599,18 +742,6 @@ export default function EvaluationMatrix() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setShowJSON((v) => !v)}
-                className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
-              >
-                {showJSON ? "Ocultar JSON" : "Ver JSON"}
-              </button>
-              <button
-                onClick={copyJSON}
-                className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
-              >
-                Copiar JSON
-              </button>
               <button
                 onClick={resetAll}
                 className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
@@ -1025,6 +1156,27 @@ export default function EvaluationMatrix() {
           </div>
         </section>
 
+        <div className="mt-10 flex flex-wrap justify-end gap-2">
+          <button
+            onClick={() => setShowJSON((v) => !v)}
+            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
+          >
+            {showJSON ? "Ocultar JSON" : "Ver JSON"}
+          </button>
+          <button
+            onClick={generatePDF}
+            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
+          >
+            Exportar PDF
+          </button>
+          <button
+            onClick={copyJSON}
+            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50"
+          >
+            Copiar JSON
+          </button>
+        </div>
+
         {/* JSON Panel */}
         {showJSON && (
           <section className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -1094,8 +1246,10 @@ export default function EvaluationMatrix() {
             </span>
           </div>
         </footer>
-      </div>
 
+        
+      </div>
+<footer class="text-center text-xs text-gray-600 pt-2 p-3 bg-[#e7e7e7]">Hecho con ❤️ atte Carlitos</footer>
       {showChangelog && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 px-4 py-6">
           <div className="w-full max-w-3xl rounded-3xl bg-white p-6 shadow-2xl">
@@ -1272,16 +1426,16 @@ export default function EvaluationMatrix() {
                     ) : null}
 
                     {analysisResult.raw && (
-                      <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-xs text-zinc-700">
+                      <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
                         <div className="text-[11px] font-semibold uppercase text-zinc-600">
                           Detalle
                         </div>
                         <div className="mt-2 space-y-1">
                           {Object.entries(analysisResult.raw).map(([key, value]) => (
-                            <div key={key} className="leading-tight">
-                              <span className="font-semibold text-zinc-800 capitalize">
+                            <div key={key} className="leading-tight mb-3">
+                              <h1 className="font-semibold text-zinc-800">
                                 {key}:{" "}
-                              </span>
+                              </h1>
                               <span className="text-zinc-700">{formatDetailValue(value)}</span>
                             </div>
                           ))}
@@ -1304,6 +1458,8 @@ export default function EvaluationMatrix() {
         </div>
       )}
     </div>
+
+
   );
 }
 
